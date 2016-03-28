@@ -1,6 +1,7 @@
 import unittest
 from io import StringIO
 import ainekset
+from ainekset import AinesParseError
 
 class ruokaAines:
   dikreetti = False
@@ -37,11 +38,19 @@ class JaaKaappi:
         line = buf.readline()
       #depending on what we read, do differetn stuff
       if (reading == 'contents'):
-        self.parseLine(line)
+        try:
+          uusi = self.parseLine(line)
+          if (uusi):
+            self.ruokaAineet.append( uusi)
+        except AinesParseError as e:
+          print('Error parsing :'+e.message)
       line = buf.readline()
   def parseLine( self, line):
+    #one line can conatin many items (10 prk maioa ex)
     parts = line.strip().split("\t")
-    print(parts)
+    aines = ainekset.ainesOsa( parts)
+    return aines
+    #print(parts)
 
 
 """ UNIT TESTS """
