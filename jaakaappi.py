@@ -1,5 +1,6 @@
 import unittest
 from io import StringIO
+import ainekset
 
 class ruokaAines:
   dikreetti = False
@@ -18,15 +19,29 @@ class JaaKaappi:
     print("Jääkaapin sisältö:")
     for aines in self.ruokaAineet:
       print( aines)
+    return len(self.ruokaAineet) #returns nr of items
   def lataaJaakaappi( self, buf):
+    reading = 'header'
     line = buf.readline()
-    line_s = line.split(' ')
-    if (line_s[0] != 'Jääkaappitiedosto'):
+    if (line.split()[0] != 'Jääkaappitiedosto'):
       raise BufferError('File format not jääkaappi-format')
       return False
     while (line):
-      print( line)
+      #print( line)
+      #interpret headings
+      command = line.strip().upper()
+      if (command == "JÄÄKAAPIN SISÄLTÖ"):
+        if( reading != 'header'):
+          raise BufferError('Order of jääkaappi-file should be header-defs-contents')
+        reading = 'contents'
+        line = buf.readline()
+      #depending on what we read, do differetn stuff
+      if (reading == 'contents'):
+        self.parseLine(line)
       line = buf.readline()
+  def parseLine( self, line):
+    parts = line.strip().split("\t")
+    print(parts)
 
 
 """ UNIT TESTS """
@@ -47,7 +62,7 @@ class Test( unittest.TestCase):
     test_data = u"Jääkaappitiedosto versio 1.0\n"\
       + u"# Matin jääkaappi\n"\
       + u"JÄÄKAAPIN SISÄLTÖ\n"\
-      + u"Maito\t1\tpurkki\ta\t10dl\tVL\3.4.2016"
+      + u"Maito\t1\tpurkki\ta\t10dl\tVL\t3.4.2016"
     self.input_file = StringIO(test_data)
     kaappi = JaaKaappi()
     try:
@@ -56,6 +71,6 @@ class Test( unittest.TestCase):
       self.fail("Loading a correctly structured file caused an exception")
     self.input_file.close()
 
-    self.assertNotEqual(None, kaappi.listaaKaikki(), "Loading data failed.")
+    self.assertNotEqual(0, kaappi.listaaKaikki(), "Loading data failed.")
 if __name__ == '__main__':
   unittest.main()
