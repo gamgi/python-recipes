@@ -19,6 +19,7 @@ def parseAllergy( allergyData):
       raise AinesParseError('allergy flag '+i+' unknown')
   return parts
 
+
 class ainesOsa( ruokaAines):
   #def __init__( self, name, amount, unit, realAmount = None, allergies = None, date = None):
   def __init__( self, parts):
@@ -29,8 +30,8 @@ class ainesOsa( ruokaAines):
     self.amount = parts[1]
     self.unit = parts[2]
     # More specific amount
-    if (parts[3]):
-      self.realAmount = parts[3]
+    if (parts[4]):
+      self.realAmount = parts[4]
     # Allergy data
     if (parts[5]):
       self.allergy = parseAllergy(parts[5])
@@ -44,4 +45,6 @@ class ainesOsa( ruokaAines):
           self.time = time.strptime(parts[6], "%d.%m.%Y")
         except ValueError:
           raise AinesParseError('date in incompatible format. must be like 22.12.2016')
+  def __str__(self):
+    return self.name+"\t"+self.amount+" "+self.unit+"\t"+self.realAmount+"\t"+",".join(self.allergy);
 
