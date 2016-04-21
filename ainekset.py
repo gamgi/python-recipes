@@ -7,9 +7,13 @@ class AinesParseError(Exception):
     def __init__(self, message):
         super(AinesParseError, self).__init__(message)
 
-
 class ruokaAines:
-  pass
+  def __init__( self, nimi):
+    self.name = nimi
+  def __str__( self):
+    return self.name
+
+
 def parseAllergy( allergyData):
   #Vähälaktoosinen, Laktoositon, Gluteeniton, Maidoton, Allergeenit, Kasvis, Pähkinä, Soija, Vegaani
   flags = ['VL','L','G','M','A','K','P','S','V']

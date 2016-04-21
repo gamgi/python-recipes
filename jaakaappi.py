@@ -2,15 +2,7 @@ import unittest
 from io import StringIO
 import ainekset
 #from ainekset import AinesParseError
-from ainekset import *
-
-class ruokaAines:
-  dikreetti = False
-  yksikko = None
-  allergiat = []
-  nimi = None
-  def __init__( self, nimi):
-    self.name = nimi
+#from ainekset import *
 
 
 
@@ -26,7 +18,7 @@ class JaaKaappi:
     reading = 'header'
     line = buf.readline()
     if (line.split()[0] != 'Jääkaappitiedosto'):
-      raise BufferError('File format not jääkaappi-format')
+      raise BufferError('File format not jääkaappi-format, Must start with "Jääkaappitiedosto"')
       return False
     while (line):
       #print( line)
@@ -82,11 +74,13 @@ class Test( unittest.TestCase):
     self.input_file.close()
 
     self.assertNotEqual(0, kaappi.listaaKaikki(), "Loading data failed.")
+
+
   def test_parseAllergy( self):
     test_data = "VL, G"
-    parseAllergy( test_data)
+    ainekset.parseAllergy( test_data)
     #self.assertRaises(AinesParseError, parseAllergy, test_data)
     test_data = "P, Q"
-    self.assertRaises(AinesParseError, parseAllergy, test_data)
+    self.assertRaises(ainekset.AinesParseError, ainekset.parseAllergy, test_data)
 if __name__ == '__main__':
   unittest.main()
