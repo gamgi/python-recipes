@@ -1,30 +1,30 @@
 import unittest
-from io import StringIO
-#from sets import Set
+#from io import StringIO
 import errno
 import glob
 import re #regular expressions
 import ainekset
+
 class resepti:
-  def __init__(self, nimi, annoksia, ainekset, ohjeet):
-    self.name = nimi
-    self.portions = annoksia
-    self.ainekset = ainekset
-    self.ohjeet = ohjeet
+  def __init__(self, name, portions, ingredients, instructions):
+    self.name = name
+    self.portions = portions
+    self.ingredients = ingredients
+    self.instructions = instructions
 
 class ReseptiKirja:
   """ Luokka reseptien säilytykselle"""
   # Receipes stored as touples in a set: set(("Milk", "1dl"), ("Sugar", "1tbsp"))
-  def lataaResepti( self, buf):
+  recipes = set()
+  def loadRecipe( self, buf):
     reading = 'header'
-    ainesLista = set()
+    ingredientList = set()
     line = buf.readline()
     if (line.split()[0] != 'Reseptitiedosto'):
       raise BufferError('File format not resepti-format, Must start with "Reseptitiedosto"')
       return False
-    nimi = buf.readline()
-    print(nimi)
-    annoksia = buf.readline()
+    name = buf.readline()
+    portions = buf.readline()
     #sitten itse ohje
     while (line):
       #interpret headings
@@ -42,14 +42,15 @@ class ReseptiKirja:
       #depending on what we read, do different stuff
       if (reading == 'contents'):
         try:
-          aines = self.parseLine(line)
-          if (aines):
-            ainesLista.add( aines)
+          ingredient = self.parseLine(line)
+          if (ingredient):
+            ingredientList.add( ingredient)
         except AinesParseError as e:
           print('Error parsing :'+e.message)
       line = buf.readline()
     # Kun rivit luettu, luodaan reseptiolio
-    uusiResepti = resepti(nimi,annoksia, ainesLista, "")
+    newRecipe = resepti( name, portions, ingredientList, "")
+    self.recipes.add( newRecipe)
 
   def parseLine( self, line):
     # parses lines like: "Maitoa   1dl" into parts and returns them as tuple
@@ -60,7 +61,7 @@ class ReseptiKirja:
 
 
 
-  def lataaKansio( self, path):
+  def loadFolder( self, path):
     # add the file extension required by "glob"
     if (path.endswith("/")):
       path += "*.txt"
@@ -69,10 +70,9 @@ class ReseptiKirja:
     # fin all files in directory
     files = glob.glob( path)
     for name in files:
-      print(name)
       try:
         buf = open( name)
-        self.lataaResepti( buf)
+        self.loadRecipe( buf)
         buf.close()
       except IOError as e:
         if (e.errno != errno.EISDIR): #it is not a directory, it's a real error
@@ -86,7 +86,7 @@ class Test( unittest.TestCase):
     self.assertEqual( True, True)
   def test_loading( self):
     kirja = ReseptiKirja()
-    kirja.lataaKansio("./reseptit/")
+    kirja.loadFolder("./reseptit/")
 
 
 if __name__ == '__main__':

@@ -9,12 +9,12 @@ import ainekset
 class JaaKaappi:
   """ Luokka ruoka-aineiden säilytykselle"""
   ruokaAineet = []
-  def listaaKaikki( self):
+  def listaAll( self):
     print("Jääkaapin sisältö:")
     for aines in self.ruokaAineet:
       print( aines)
     return len(self.ruokaAineet) #returns nr of items
-  def lataaJaakaappi( self, buf):
+  def loadFridge( self, buf):
     reading = 'header'
     line = buf.readline()
     if (line.split()[0] != 'Jääkaappitiedosto'):
@@ -57,7 +57,7 @@ class Test( unittest.TestCase):
     test_data = u"Moromoro versio 1.0\n"
     self.input_file = StringIO(test_data)
     kaappi = JaaKaappi()
-    self.assertRaises(BufferError, kaappi.lataaJaakaappi,self.input_file)
+    self.assertRaises(BufferError, kaappi.loadFridge,self.input_file)
 
 
   def test_loading( self):
@@ -68,12 +68,12 @@ class Test( unittest.TestCase):
     self.input_file = StringIO(test_data)
     kaappi = JaaKaappi()
     try:
-      kaappi.lataaJaakaappi(self.input_file)
+      kaappi.loadFridge(self.input_file)
     except IOError:
       self.fail("Loading a correctly structured file caused an exception")
     self.input_file.close()
 
-    self.assertNotEqual(0, kaappi.listaaKaikki(), "Loading data failed.")
+    self.assertNotEqual(0, kaappi.listaAll(), "Loading data failed.")
 
 
   def test_parseAllergy( self):
