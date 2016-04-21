@@ -9,38 +9,38 @@ import ainekset
 class JaaKaappi:
   """ Luokka ruoka-aineiden säilytykselle"""
   ruokaAineet = []
-  def listaAll( self):
+  def listaaKaikki( self):
     print("Jääkaapin sisältö:")
     for aines in self.ruokaAineet:
       print( aines)
     return len(self.ruokaAineet) #returns nr of items
-  def loadFridge( self, buf):
-    reading = 'header'
-    line = buf.readline()
-    if (line.split()[0] != 'Jääkaappitiedosto'):
+  def lataaJaakaappi( self, buf):
+    lukee = 'header'
+    rivi = buf.readline()
+    if (rivi.split()[0] != 'Jääkaappitiedosto'):
       raise BufferError('File format not jääkaappi-format, Must start with "Jääkaappitiedosto"')
       return False
-    while (line):
-      #print( line)
+    while (rivi):
+      #print( rivi)
       #interpret headings
-      command = line.strip().upper()
-      if (command == "JÄÄKAAPIN SISÄLTÖ"):
-        if( reading != 'header'):
+      otsikko = rivi.strip().upper()
+      if (otsikko == "JÄÄKAAPIN SISÄLTÖ"):
+        if( lukee != 'header'):
           raise BufferError('Order of jääkaappi-file should be header-defs-contents')
-        reading = 'contents'
-        line = buf.readline()
+        lukee = 'contents'
+        rivi = buf.readline()
       #depending on what we read, do differetn stuff
-      if (reading == 'contents'):
+      if (lukee == 'contents'):
         try:
-          uusi = self.parseLine(line)
+          uusi = self.parseLine(rivi)
           if (uusi):
             self.ruokaAineet.append( uusi)
         except AinesParseError as e:
           print('Error parsing :'+e.message)
-      line = buf.readline()
-  def parseLine( self, line):
-    #one line can conatin many items (10 prk maioa ex)
-    parts = line.strip().split("\t")
+      rivi = buf.readline()
+  def parseLine( self, rivi):
+    #one rivi can conatin many items (10 prk maioa ex)
+    parts = rivi.strip().split("\t")
     aines = ainekset.ainesOsa( parts)
     return aines
     #print(parts)
@@ -57,7 +57,7 @@ class Test( unittest.TestCase):
     test_data = u"Moromoro versio 1.0\n"
     self.input_file = StringIO(test_data)
     kaappi = JaaKaappi()
-    self.assertRaises(BufferError, kaappi.loadFridge,self.input_file)
+    self.assertRaises(BufferError, kaappi.lataaJaakaappi,self.input_file)
 
 
   def test_loading( self):
@@ -68,19 +68,19 @@ class Test( unittest.TestCase):
     self.input_file = StringIO(test_data)
     kaappi = JaaKaappi()
     try:
-      kaappi.loadFridge(self.input_file)
+      kaappi.lataaJaakaappi(self.input_file)
     except IOError:
       self.fail("Loading a correctly structured file caused an exception")
     self.input_file.close()
 
-    self.assertNotEqual(0, kaappi.listaAll(), "Loading data failed.")
+    self.assertNotEqual(0, kaappi.listaaKaikki(), "Loading data failed.")
 
 
   def test_parseAllergy( self):
     test_data = "VL, G"
-    ainekset.parseAllergy( test_data)
+    ainekset.parsiAllergiat( test_data)
     #self.assertRaises(AinesParseError, parseAllergy, test_data)
     test_data = "P, Q"
-    self.assertRaises(ainekset.AinesParseError, ainekset.parseAllergy, test_data)
+    self.assertRaises(ainekset.AinesParseError, ainekset.parsiAllergiat, test_data)
 if __name__ == '__main__':
   unittest.main()

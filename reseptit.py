@@ -6,62 +6,62 @@ import re #regular expressions
 import ainekset
 
 class resepti:
-  def __init__(self, name, portions, ingredients, instructions):
-    self.name = name
-    self.portions = portions
-    self.ingredients = ingredients
-    self.instructions = instructions
+  def __init__(self, nimi, annokset, ainekset, ohjeet):
+    self.nimie = nimi
+    self.annokset = annokset
+    self.ainekset = ainekset
+    self.ohjeet = ohjeet
 
 class ReseptiKirja:
   """ Luokka reseptien säilytykselle"""
   # Receipes stored as touples in a set: set(("Milk", "1dl"), ("Sugar", "1tbsp"))
   recipes = set()
-  def loadRecipe( self, buf):
-    reading = 'header'
-    ingredientList = set()
-    line = buf.readline()
-    if (line.split()[0] != 'Reseptitiedosto'):
+  def lataaResepti( self, buf):
+    otsikko = 'header'
+    ainesLista = set()
+    rivi = buf.readline()
+    if (rivi.split()[0] != 'Reseptitiedosto'):
       raise BufferError('File format not resepti-format, Must start with "Reseptitiedosto"')
       return False
     name = buf.readline()
     portions = buf.readline()
     #sitten itse ohje
-    while (line):
+    while (rivi):
       #interpret headings
-      command = line.strip().upper()
+      command = rivi.strip().upper()
       if (command == "RAAKA-AINEET"):
-        if( reading != 'header'):
+        if( otsikko != 'header'):
           raise BufferError('Order of jääkaappi-file should be header-contents-instructions (RAAKA-AINEET out of place)')
-        reading = 'contents'
-        line = buf.readline()
+        otsikko = 'contents'
+        rivi = buf.readline()
       elif (command == "OHJEET"):
-        if( reading != 'contents'):
+        if( otsikko != 'contents'):
           raise BufferError('Order of jääkaappi-file should be header-contents-instructions (OHJEET out of place)')
-        reading = 'instructions'
-        line = buf.readline()
+        otsikko = 'instructions'
+        rivi = buf.readline()
       #depending on what we read, do different stuff
-      if (reading == 'contents'):
+      if (otsikko == 'contents'):
         try:
-          ingredient = self.parseLine(line)
-          if (ingredient):
-            ingredientList.add( ingredient)
+          aines = self.parseLine(rivi)
+          if (aines):
+            ainesLista.add( aines)
         except AinesParseError as e:
           print('Error parsing :'+e.message)
-      line = buf.readline()
+      rivi = buf.readline()
     # Kun rivit luettu, luodaan reseptiolio
-    newRecipe = resepti( name, portions, ingredientList, "")
+    newRecipe = resepti( name, portions, ainesLista, "")
     self.recipes.add( newRecipe)
 
-  def parseLine( self, line):
+  def parseLine( self, rivi):
     # parses lines like: "Maitoa   1dl" into parts and returns them as tuple
-    parts = re.findall(r"\s?(\w+)\s*([0-9]+)?(\w+)?(?:\n|$)", line)[0] #findall returns list of sets, but only one set per line...so slice
+    parts = re.findall(r"\s?(\w+)\s*([0-9]+)?(\w+)?(?:\n|$)", rivi)[0] #findall returns list of sets, but only one set per line...so slice
     aines = ainekset.ruokaAines( parts[0])
     return tuple( [aines, parts[1], parts[2]]) #Using a tuple here is clearer because it is not for iteration
 
 
 
 
-  def loadFolder( self, path):
+  def lataaKansio( self, path):
     # add the file extension required by "glob"
     if (path.endswith("/")):
       path += "*.txt"
@@ -72,7 +72,7 @@ class ReseptiKirja:
     for name in files:
       try:
         buf = open( name)
-        self.loadRecipe( buf)
+        self.lataaResepti( buf)
         buf.close()
       except IOError as e:
         if (e.errno != errno.EISDIR): #it is not a directory, it's a real error
@@ -86,7 +86,7 @@ class Test( unittest.TestCase):
     self.assertEqual( True, True)
   def test_loading( self):
     kirja = ReseptiKirja()
-    kirja.loadFolder("./reseptit/")
+    kirja.lataaKansio("./reseptit/")
 
 
 if __name__ == '__main__':
