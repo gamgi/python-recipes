@@ -15,7 +15,7 @@ class resepti:
 class ReseptiKirja:
   """ Luokka reseptien säilytykselle"""
   # Receipes stored as touples in a set: set(("Milk", "1dl"), ("Sugar", "1tbsp"))
-  recipes = set()
+  reseptit = set()
   def lataaResepti( self, buf):
     otsikko = 'header'
     ainesLista = set()
@@ -49,8 +49,8 @@ class ReseptiKirja:
           print('Error parsing :'+e.message)
       rivi = buf.readline()
     # Kun rivit luettu, luodaan reseptiolio
-    newRecipe = resepti( name, portions, ainesLista, "")
-    self.recipes.add( newRecipe)
+    uusiResepti = resepti( name, portions, ainesLista, "")
+    self.reseptit.add( uusiResepti)
 
   def parseLine( self, rivi):
     # parses lines like: "Maitoa   1dl" into parts and returns them as tuple
