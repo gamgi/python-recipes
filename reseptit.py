@@ -7,7 +7,7 @@ import ainekset
 
 class resepti:
   def __init__(self, nimi, annokset, ainekset, ohjeet):
-    self.nimie = nimi
+    self.nimi = nimi
     self.annokset = annokset
     self.ainekset = ainekset
     self.ohjeet = ohjeet
@@ -17,7 +17,7 @@ class ReseptiKirja:
   # Receipes stored as touples in a set: set(("Milk", "1dl"), ("Sugar", "1tbsp"))
   reseptit = set()
   def lataaResepti( self, buf):
-    otsikko = 'header'
+    lukee = 'header'
     ainesLista = set()
     rivi = buf.readline()
     if (rivi.split()[0] != 'Reseptitiedosto'):
@@ -28,19 +28,19 @@ class ReseptiKirja:
     #sitten itse ohje
     while (rivi):
       #interpret headings
-      command = rivi.strip().upper()
-      if (command == "RAAKA-AINEET"):
-        if( otsikko != 'header'):
+      otsikko = rivi.strip().upper()
+      if (otsikko == "RAAKA-AINEET"):
+        if( lukee != 'header'):
           raise BufferError('Order of jääkaappi-file should be header-contents-instructions (RAAKA-AINEET out of place)')
-        otsikko = 'contents'
+        lukee = 'contents'
         rivi = buf.readline()
-      elif (command == "OHJEET"):
-        if( otsikko != 'contents'):
+      elif (otsikko == "OHJEET"):
+        if( lukee != 'contents'):
           raise BufferError('Order of jääkaappi-file should be header-contents-instructions (OHJEET out of place)')
-        otsikko = 'instructions'
+        lukee = 'instructions'
         rivi = buf.readline()
       #depending on what we read, do different stuff
-      if (otsikko == 'contents'):
+      if (lukee == 'contents'):
         try:
           aines = self.parseLine(rivi)
           if (aines):
