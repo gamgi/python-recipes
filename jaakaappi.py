@@ -1,7 +1,8 @@
 import unittest
 from io import StringIO
 import ainekset
-from ainekset import AinesParseError
+#from ainekset import AinesParseError
+from ainekset import *
 
 class ruokaAines:
   dikreetti = False
@@ -81,5 +82,11 @@ class Test( unittest.TestCase):
     self.input_file.close()
 
     self.assertNotEqual(0, kaappi.listaaKaikki(), "Loading data failed.")
+  def test_parseAllergy( self):
+    test_data = "VL, G"
+    parseAllergy( test_data)
+    #self.assertRaises(AinesParseError, parseAllergy, test_data)
+    test_data = "P, Q"
+    self.assertRaises(AinesParseError, parseAllergy, test_data)
 if __name__ == '__main__':
   unittest.main()

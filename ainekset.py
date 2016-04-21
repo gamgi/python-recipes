@@ -14,6 +14,9 @@ def parseAllergy( allergyData):
   #Vähälaktoosinen, Laktoositon, Gluteeniton, Maidoton, Allergeenit, Kasvis, Pähkinä, Soija, Vegaani
   flags = ['VL','L','G','M','A','K','P','S','V']
   parts = allergyData.upper().split(',')
+  #parts might have whitespace left, so take it out
+  parts = list(map( str.strip, parts))
+  #chek that all allergy flags are valid
   for i in parts:
     if (i not in flags):
       raise AinesParseError('allergy flag '+i+' unknown')
@@ -46,5 +49,5 @@ class ainesOsa( ruokaAines):
         except ValueError:
           raise AinesParseError('date in incompatible format. must be like 22.12.2016')
   def __str__(self):
-    return self.name+"\t"+self.amount+" "+self.unit+"\t"+self.realAmount+"\t"+",".join(self.allergy);
+    return self.name+"\t"+self.amount+" "+self.unit+"\t"+self.realAmount+"\t"+",".join(self.allergy)
 
