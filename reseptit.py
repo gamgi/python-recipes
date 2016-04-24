@@ -1,5 +1,5 @@
 import unittest
-#from io import StringIO
+from io import StringIO
 import errno
 import glob
 import re #regular expressions
@@ -57,12 +57,12 @@ class ReseptiKirja:
       otsikko = rivi.strip().upper()
       if (otsikko == "RAAKA-AINEET"):
         if( lukee != 'header'):
-          raise BufferError('Order of jääkaappi-file should be header-contents-instructions (RAAKA-AINEET out of place)')
+          raise BufferError('Order of recipe-file should be header,RAAKA-AINEET,OHJEET (RAAKA-AINEET out of place)')
         lukee = 'contents'
         rivi = buf.readline()
       elif (otsikko == "OHJEET"):
         if( lukee != 'contents'):
-          raise BufferError('Order of jääkaappi-file should be header-contents-instructions (OHJEET out of place)')
+          raise BufferError('Order of recipe-file should be header,RAAKA-AINEET,OHJEET (OHJEET out of place)')
         lukee = 'instructions'
         rivi = buf.readline()
       #depending on what we read, do different stuff
@@ -84,19 +84,26 @@ class ReseptiKirja:
     aines = ainekset.ruokaAines( parts[0])
     return tuple( [aines, parts[1], parts[2]]) #Using a tuple here is clearer because it is not for iteration
 
-
+  def listaaKaikki( self):
+    for resepti in self.reseptit:
+      print( resepti)
+    return len(self.reseptit) # returns nr of recipes
 
   def haeNimi( self, nimi):
     nimi = nimi.strip().lower()
     for resepti in self.reseptit:
       if (resepti.nimi == nimi):
         return resepti
+
+
   def haeAinesosalla( self, haettu_aines):
     tulos = []
     for resepti in self.reseptit:
       ainekset = list( resepti.ainekset)
+      #print(resepti.nimi, ainekset)
       for aines in ainekset:
         similarity = wordSimilarity( aines[0].nimi, haettu_aines)
+        #print(haettu_aines,"/",aines[0].nimi,similarity)
         if (similarity > 0.7):
           tulos.append( resepti)
     return tulos
@@ -128,6 +135,24 @@ class Test( unittest.TestCase):
   #dummy test
   def test_testing( self):
     self.assertEqual( True, True)
+
+
+  def test_loading_nofile( self):
+    test_data = u"Reseptitiedosto\n"\
+      + u"Makaroonilaatikko\n"\
+      + u"RAAKA-AINEET\n"\
+      + u"\tSipulia\t150g\n"\
+      + u"\tMakaronia\t150g\n"\
+      + u"\tMaitoa\t3dl\n"
+    self.input_file = StringIO(test_data)
+    kirja = ReseptiKirja()
+    try:
+      kirja.lataaResepti(self.input_file)
+    except IOError:
+      self.fail("Loading a correctly structured file caused an exception")
+    self.input_file.close()
+    self.assertNotEqual(0, kirja.listaaKaikki(), "Loading data failed.")
+
   def test_loading( self):
     kirja = ReseptiKirja()
     kirja.lataaKansio("./reseptit/")
