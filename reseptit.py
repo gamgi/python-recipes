@@ -38,7 +38,10 @@ class resepti:
 class ReseptiKirja:
   """ Luokka reseptien säilytykselle"""
   # Receipes stored as touples in a set: set(("Milk", "1dl"), ("Sugar", "1tbsp"))
-  reseptit = [] # a set would be great, but the issue of amounts in arithmetic operatiosn is unsolved
+  #reseptit = [] # a set would be great, but the issue of amounts in arithmetic operatiosn is unsolved
+  # note to self:  never use immutable as defautl argument...will be aref in all instances of reseptikirja
+  def __init__( self):
+    self.reseptit = []
   def lataaResepti( self, buf):
     lukee = 'header'
     ainesLista = set()
@@ -77,14 +80,26 @@ class ReseptiKirja:
 
   def parseLine( self, rivi):
     # parses lines like: "Maitoa   1dl" into parts and returns them as tuple
-    parts = re.findall(r"\s?(\w+)\s*([0-9]+)?(\w+)?(?:\n|$)", rivi)[0] #findall returns list of sets, but only one set per line...so slice
+    parts = re.findall(r"\s?(\w+)\s*([0-9]+)?(\w+)?(?:\n|$)", rivi)[0] #findall returns list of sets, but only one set per line...so slice with [0]. Regexp finds tab delimited gorups and separates the numbers from letters in "9dl"
     aines = ainekset.ruokaAines( parts[0])
     return tuple( [aines, parts[1], parts[2]]) #Using a tuple here is clearer because it is not for iteration
+
+
+
   def haeNimi( self, nimi):
     nimi = nimi.strip().lower()
     for resepti in self.reseptit:
       if (resepti.nimi == nimi):
         return resepti
+  def haeAinesosalla( self, haettu_aines):
+    tulos = []
+    for resepti in self.reseptit:
+      ainekset = list( resepti.ainekset)
+      for aines in ainekset:
+        similarity = wordSimilarity( aines[0].nimi, haettu_aines)
+        if (similarity > 0.7):
+          tulos.append( resepti)
+    return tulos
 
 
 
@@ -124,6 +139,13 @@ class Test( unittest.TestCase):
   def test_wordsimilarity( self):
     self.assertEqual(0.4 , wordSimilarity("France", "french"))
     self.assertNotEqual(0 , wordSimilarity("Makarooni", "Makaroonit"))
+
+
+  def test_search_by_ingredient( self):
+    kirja = ReseptiKirja()
+    kirja.lataaKansio("./reseptit/")
+    tulos = kirja.haeAinesosalla( "Sipuli")
+    self.assertEqual(tulos[0].nimi , "makaroonilaatikko")
 
 if __name__ == '__main__':
   unittest.main()
