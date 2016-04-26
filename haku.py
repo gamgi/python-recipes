@@ -7,7 +7,7 @@ import reseptit
 def haeValmistettavat( reseptit, jaakaappi):
   valmistettavat = set()
   for aines in jaakaappi.ruokaAineet:
-    print("Searching by",aines.nimi)
+    #print("Searching by",aines.nimi)
     tulos = reseptit.haeAinesosalla( aines.nimi)
     valmistettavat.update( tulos)
   return list(valmistettavat)
