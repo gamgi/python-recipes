@@ -10,7 +10,10 @@ def haeValmistettavat( reseptit, jaakaappi):
     #print("Searching by",aines.nimi)
     tulos = reseptit.haeAinesosalla( aines.nimi)
     valmistettavat.update( tulos)
-  return list(valmistettavat)
+  valmistettavat = list(valmistettavat)
+
+  #Nyt on potentiaalisesti valmistettavia. Tarkista mitä aineksia puuttuu
+  jaakaappi.mitaPuuttuu( valmistettavat[0])
 
 """ UNIT TESTS """
 class Test( unittest.TestCase):

@@ -75,7 +75,7 @@ class ReseptiKirja:
           print('Error parsing :'+e.message)
       rivi = buf.readline()
     # Kun rivit luettu, luodaan reseptiolio
-    uusiResepti = resepti( nimi, annokset, ainesLista, "")
+    uusiResepti = resepti( nimi, annokset, ainesLista, "") #TODO tuo vika "ohjeet" parametri on tyhjä
     self.reseptit.append( uusiResepti)
 
   def parseLine( self, rivi):

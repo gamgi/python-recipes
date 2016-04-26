@@ -40,6 +40,8 @@ class ainesOsa( ruokaAines):
       # More specific amount
       if (parts[4]):
         self.todMaara = parts[4]
+      else:
+        self.todMaara = Null
       # Allergy data
       if (parts[5]):
         self.allergiat = parsiAllergiat(parts[5])
@@ -57,5 +59,11 @@ class ainesOsa( ruokaAines):
       #kaikkia parametrejä ei siis aseteta
       pass
   def __str__(self):
-    return self.nimi+"\t"+self.maara+" "+self.yksikko+"\t"+self.todMaara+"\t"+",".join(self.allergiat)
+    out = self.nimi+"\t"+self.maara+" "+self.yksikko
+    try:
+      out += "\t"+self.todMaar
+      out += "\t"+",".join(self.allergiat)
+    except AttributeError:
+      pass
+    return out
 
