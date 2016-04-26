@@ -4,27 +4,8 @@ import errno
 import glob
 import re #regular expressions
 import ainekset
+import functions
 
-
-def wordSimilarity( word1, word2):
-  """Olen suuresti ihastunut Simon Whiten Strike-a-match algoritmiin"""
-  pairs1 = letterPairs( word1.lower())
-  pairs2 = letterPairs( word2.lower())
-  intersection = 0
-  union = len(pairs1) + len(pairs2)
-  for pair1 in pairs1:
-    for pair2 in pairs2:
-      if (pair1 == pair2):
-        intersection += 1
-        pairs2.remove(pair2)
-  return (2 * intersection) / union
-
-
-def letterPairs( word):
-  pairs = []
-  for c in range(len(word)-1):
-    pairs.append(word[c:c+2])
-  return pairs
 
 class resepti:
   def __init__(self, nimi, annokset, ainekset, ohjeet):
@@ -69,7 +50,7 @@ class ReseptiKirja:
       if (lukee == 'contents'):
         try:
           aines = self.parseLine(rivi)
-          if (aines):
+          if (len(aines) != 0):
             ainesLista.add( aines)
         except AinesParseError as e:
           print('Error parsing :'+e.message)
@@ -81,13 +62,15 @@ class ReseptiKirja:
   def parseLine( self, rivi):
     # parses lines like: "Maitoa   1dl" into parts and returns them as tuple
     parts = re.findall(r"\s?(\w+)\s*([0-9]+)?(\w+)?(?:\n|$)", rivi)[0] #findall returns list of sets, but only one set per line...so slice with [0]. Regexp finds tab delimited gorups and separates the numbers from letters in "9dl"
+    if (len(parts) == 0):
+      raise AinesParseError('Unable to parse line "'+rivi+'"')
     aines = ainekset.ruokaAines( parts[0])
     return tuple( [aines, parts[1], parts[2]]) #Using a tuple here is clearer because it is not for iteration
 
   def listaaKaikki( self):
     for resepti in self.reseptit:
       print( resepti)
-    return len(self.reseptit) # returns nr of recipes
+    return self.reseptit # returns nr of recipes
 
   def haeNimi( self, nimi):
     nimi = nimi.strip().lower()
@@ -102,7 +85,7 @@ class ReseptiKirja:
       ainekset = list( resepti.ainekset)
       #print(resepti.nimi, ainekset)
       for aines in ainekset:
-        similarity = wordSimilarity( aines[0].nimi, haettu_aines)
+        similarity = functions.wordSimilarity( aines[0].nimi, haettu_aines)
         #print(haettu_aines,"/",aines[0].nimi,similarity)
         if (similarity > 0.7):
           tulos.append( resepti)
@@ -151,7 +134,26 @@ class Test( unittest.TestCase):
     except IOError:
       self.fail("Loading a correctly structured file caused an exception")
     self.input_file.close()
-    self.assertNotEqual(0, kirja.listaaKaikki(), "Loading data failed.")
+    tulos = kirja.listaaKaikki(),
+    self.assertEqual(1, len(tulos) ,"Loading data failed.")
+
+
+  def test_haeNimi( self):
+    test_data = u"Reseptitiedosto\n"\
+      + u"Makaroonilaatikko\n"\
+      + u"RAAKA-AINEET\n"\
+      + u"\tSipulia\t150g\n"\
+      + u"\tMakaronia\t150g\n"\
+      + u"\tMaitoa\t3dl\n"
+    self.input_file = StringIO(test_data)
+    kirja = ReseptiKirja()
+    try:
+      kirja.lataaResepti(self.input_file)
+    except IOError:
+      self.fail("Loading a correctly structured file caused an exception")
+    self.input_file.close()
+    tulos = kirja.listaaKaikki()
+    self.assertEqual(tulos[0].nimi, kirja.haeNimi("Makaroonilaatikko").nimi, "Loading data failed.")
 
   def test_loading( self):
     kirja = ReseptiKirja()
@@ -161,9 +163,6 @@ class Test( unittest.TestCase):
     kirja.lataaKansio("./reseptit/")
     tulos = kirja.haeNimi("Makaroonilaatikko")
     self.assertEqual("makaroonilaatikko" , tulos.nimi)
-  def test_wordsimilarity( self):
-    self.assertEqual(0.4 , wordSimilarity("France", "french"))
-    self.assertNotEqual(0 , wordSimilarity("Makarooni", "Makaroonit"))
 
 
   def test_search_by_ingredient( self):
