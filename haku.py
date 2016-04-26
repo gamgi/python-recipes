@@ -58,12 +58,6 @@ class Test( unittest.TestCase):
 
     self.assertEqual( tulos[0].nimi, "makaroonilaatikko")
 
-  def test_loading( self):
-    #lataaa jääkaappi
-    #lataa reseptit
-    kirja = reseptit.ReseptiKirja()
-    kirja.lataaKansio("./reseptit/")
-    #TODO
 
 if __name__ == '__main__':
   unittest.main()

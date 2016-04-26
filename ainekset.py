@@ -36,22 +36,26 @@ class ainesOsa( ruokaAines):
     self.nimi = parts[0]
     self.maara = parts[1]
     self.yksikko = parts[2]
-    # More specific amount
-    if (parts[4]):
-      self.todMaara = parts[4]
-    # Allergy data
-    if (parts[5]):
-      self.allergiat = parsiAllergiat(parts[5])
-    # Date (parasta ennen)
-    if (parts[6]):
-      #print(dateutil.parse(parts[5]))
-      try:
-        self.aika = time.strptime(parts[6], "%d.%m.%y")
-      except ValueError:
+    try:
+      # More specific amount
+      if (parts[4]):
+        self.todMaara = parts[4]
+      # Allergy data
+      if (parts[5]):
+        self.allergiat = parsiAllergiat(parts[5])
+      # Date (parasta ennen)
+      if (parts[6]):
+        #print(dateutil.parse(parts[5]))
         try:
-          self.aika = time.strptime(parts[6], "%d.%m.%Y")
+          self.aika = time.strptime(parts[6], "%d.%m.%y")
         except ValueError:
-          raise AinesParseError('date in incompatible format. must be like 22.12.2016')
+          try:
+            self.aika = time.strptime(parts[6], "%d.%m.%Y")
+          except ValueError:
+            raise AinesParseError('date in incompatible format. must be like 22.12.2016')
+    except IndexError as e:
+      #kaikkia parametrejä ei siis aseteta
+      pass
   def __str__(self):
     return self.nimi+"\t"+self.maara+" "+self.yksikko+"\t"+self.todMaara+"\t"+",".join(self.allergiat)
 

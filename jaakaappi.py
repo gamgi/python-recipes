@@ -1,6 +1,7 @@
 import unittest
 from io import StringIO
 import ainekset
+import re #regular expressions
 #from ainekset import AinesParseError
 #from ainekset import *
 
@@ -40,7 +41,8 @@ class JaaKaappi:
       rivi = buf.readline()
   def parseLine( self, rivi):
     #one rivi can conatin many items (10 prk maioa ex)
-    parts = rivi.strip().split("\t")
+    #parts = rivi.strip().split("\t")
+    parts = re.split('\s+', rivi.rstrip())
     aines = ainekset.ainesOsa( parts)
     return aines
     #print(parts)
@@ -60,7 +62,7 @@ class Test( unittest.TestCase):
     self.assertRaises(BufferError, kaappi.lataaJaakaappi,self.input_file)
 
 
-  def test_loading( self):
+  def test_loading_nofile( self):
     test_data = u"Jääkaappitiedosto versio 1.0\n"\
       + u"# Matin jääkaappi\n"\
       + u"JÄÄKAAPIN SISÄLTÖ\n"\
