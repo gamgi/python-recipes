@@ -91,15 +91,15 @@ class JaaKaappi:
       # määrien  vertailu TODO
       if (jaakaapissa == False):
         #ainesosa puuttuu
-        puuttuu.append( aines[0])
-        print("puuttuu", aines[0], "(kokonaan)")
+        puuttuu.append( (aines[0],aines[1],aines[2])) #tuple of <object aines>, 20, dl
+        #print("puuttuu", aines[0], "(kokonaan)")
       else:
         #print( aines, jaakaapissa)
         # Tuotetta on, mutta puuttuuko silti jokin määrä
         erotus,pohjaYksikko = functions.erotus( aines, jaakaapissa)
         if (erotus > 0):
-          puuttuu.append( aines[0], erotus, pohjaYksikko)
-          print("puuttuu",erotus,pohjaYksikko)
+          puuttuu.append( (aines[0], erotus, pohjaYksikko))
+          #print("puuttuu",erotus,pohjaYksikko)
         #TODO aineen vertailu funktio
 
       #print(self.onkoTuotetta(aines.nimi))
