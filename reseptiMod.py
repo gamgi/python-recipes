@@ -3,8 +3,8 @@ from io import StringIO
 import errno
 import glob
 import re #regular expressions
-import ainekset
-import functions
+import ainesMod
+import functionsMod
 
 
 class resepti:
@@ -64,7 +64,7 @@ class ReseptiKirja:
     parts = re.findall(r"\s?(\w+)\s*([0-9]+)?(\w+)?(?:\n|$)", rivi)[0] #findall returns list of sets, but only one set per line...so slice with [0]. Regexp finds tab delimited gorups and separates the numbers from letters in "9dl"
     if (len(parts) == 0):
       raise AinesParseError('Unable to parse line "'+rivi+'"')
-    aines = ainekset.ruokaAines( parts[0])
+    aines = ainesMod.ruokaAines( parts[0])
     return tuple( [aines, parts[1], parts[2]]) #Using a tuple here is clearer because it is not for iteration
 
   def listaaKaikki( self):
@@ -85,7 +85,7 @@ class ReseptiKirja:
       ainekset = list( resepti.ainekset)
       #print(resepti.nimi, ainekset)
       for aines in ainekset:
-        similarity = functions.wordSimilarity( aines[0].nimi, haettu_aines)
+        similarity = functionsMod.wordSimilarity( aines[0].nimi, haettu_aines)
         #print(haettu_aines,"/",aines[0].nimi,similarity)
         if (similarity > 0.7):
           tulos.append( resepti)

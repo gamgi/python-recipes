@@ -1,9 +1,9 @@
 import unittest
 from io import StringIO
-import ainekset
-import jaakaappi
-import reseptit
-
+import ainesMod
+import jaakaappiMod
+import reseptiMod
+#ä
 
 
 def haeValmistettavat( kirja, jaakaappi):
@@ -16,7 +16,7 @@ def haeValmistettavat( kirja, jaakaappi):
         valmistettavat.append(t.nimi)
   #valmistettavat = list(valmistettavat)
   #print(valmistettavat)
-  #Nyt on potentiaalisesti valmistettavia. Tarkista mitä aineksia puuttuu
+  #mitä aineksia puuttuu näistä valmistetavista
   vertailulista = []
   for resepti_nimi in valmistettavat:
     #print(resepti_nimi,"*")
@@ -42,9 +42,10 @@ class Test( unittest.TestCase):
       + u"# Matin jääkaappi\n"\
       + u"JÄÄKAAPIN SISÄLTÖ\n"\
       + u"Maito\t1\tpurkki\ta\t10dl\tVL\t3.4.2016\n"\
-      + u"Sipulia\t1\tkpl\ta\t100g"
+      + u"Sipuli\t1\tkpl" #TODO fix when no todMaara is defined
+      #+ u"Sipuli\t1\tkpl\ta\t100g"
     self.input_file = StringIO(test_data)
-    kaappi = jaakaappi.JaaKaappi()
+    kaappi = jaakaappiMod.JaaKaappi()
     try:
       kaappi.lataaJaakaappi(self.input_file)
     except IOError:
@@ -63,7 +64,7 @@ class Test( unittest.TestCase):
       + u"Tee jotainn"\
       + u"Ruokaa\n"
     self.input_file = StringIO(test_data)
-    kirja = reseptit.ReseptiKirja()
+    kirja = reseptiMod.ReseptiKirja()
     try:
       kirja.lataaResepti(self.input_file)
     except IOError:

@@ -1,8 +1,8 @@
 import unittest
 from io import StringIO
-import ainekset
-import reseptit
-import functions
+import ainesMod
+import reseptiMod
+import functionsMod
 import re #regular expressions
 
 #from ainekset import AinesParseError
@@ -51,7 +51,7 @@ class JaaKaappi:
     #one rivi can conatin many items (10 prk maioa ex)
     #parts = rivi.strip().split("\t")
     parts = re.split('\s+', rivi.rstrip().lower())
-    aines = ainekset.ainesOsa( parts)
+    aines = ainesMod.ainesOsa( parts)
     return aines
     #print(parts)
 
@@ -59,7 +59,7 @@ class JaaKaappi:
     tulos = []
     #print(self.ruokaAineet)
     for aines in self.ruokaAineet:
-      if (functions.wordSimilarity( aines.nimi, haettava.nimi) > 0.7):
+      if (functionsMod.wordSimilarity( aines.nimi, haettava.nimi) > 0.7):
       #if (aines.nimi == haettava.nimi):
         #huomaa että voi olla useampi sama tuote jääkaapissa
         tulos.append(aines)
@@ -96,11 +96,14 @@ class JaaKaappi:
       else:
         #print( aines, jaakaapissa)
         # Tuotetta on, mutta puuttuuko silti jokin määrä
-        erotus,pohjaYksikko = functions.erotus( aines, jaakaapissa)
-        if (erotus > 0):
-          puuttuu.append( (aines[0], erotus, pohjaYksikko))
-          #print("puuttuu",erotus,pohjaYksikko)
-        #TODO aineen vertailu funktio
+        try:
+          erotus,pohjaYksikko = functionsMod.erotus( aines, jaakaapissa)
+          if (erotus > 0):
+            puuttuu.append( (aines[0], erotus, pohjaYksikko))
+            #print("puuttuu",erotus,pohjaYksikko)
+        except ainesMod.AinesParseError as e:
+          print('Error in :'+e.message)
+          
 
       #print(self.onkoTuotetta(aines.nimi))
       #todo käyttää onkoTuotetta ja palauttaa määrät
@@ -150,7 +153,7 @@ class Test( unittest.TestCase):
     except IOError:
       self.fail("Loading a correctly structured file caused an exception")
     self.input_file.close()
-    sipuli = ainekset.ruokaAines("sipuli")
+    sipuli = ainesMod.ruokaAines("sipuli")
     self.assertEqual(False, kaappi.onkoTuotetta( sipuli), "onkoTuotetta does not function as intended when returning false") 
 
     #Lisätään sipuli
@@ -205,7 +208,7 @@ class Test( unittest.TestCase):
     kaappi.mitaPuuttuu( resepti) # TODO
   
     #Lisätään sipuli
-    sipuli = ainekset.ruokaAines("sipuli")
+    sipuli = ainesMod.ruokaAines("sipuli")
     test_data += u"\nSipuli\t1\tkpl"
     self.input_file = StringIO(test_data)
     try:
@@ -219,9 +222,9 @@ class Test( unittest.TestCase):
 
   def test_parseAllergy( self):
     test_data = "VL, G"
-    ainekset.parsiAllergiat( test_data)
+    ainesMod.parsiAllergiat( test_data)
     #self.assertRaises(AinesParseError, parseAllergy, test_data)
     test_data = "P, Q"
-    self.assertRaises(ainekset.AinesParseError, ainekset.parsiAllergiat, test_data)
+    self.assertRaises(ainesMod.AinesParseError, ainesMod.parsiAllergiat, test_data)
 if __name__ == '__main__':
   unittest.main()
