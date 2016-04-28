@@ -78,7 +78,7 @@ class Test( unittest.TestCase):
       print (t[0], "puuttuu",t[1],"ainesta")
       puuttuvat = []
       for a in t[2]:
-        print("\t",a[0],a[1],a[2])
+        print("\t",a[0],a[1],a[2],a[3])
         puuttuvat.append(a[0])
       #print("\t",puuttuvat)
     # Puuttuu makaronit ja sipuli, eli kaksi asiaa.

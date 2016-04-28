@@ -76,7 +76,7 @@ class JaaKaappi:
         if (aine.yksikko == pohja_yksikko and re.sub("\d","",aine.todMaara) == pohja_todYksikko):
           pohja.maara += aine.maara
         else:
-            raise AinesParseError('The Jaakaappi-tiedosto has multiple instances of '+aine.nimi+' with different base units')
+            raise ainesMod.AinesParseError('The Jaakaappi-tiedosto has multiple instances of '+aine.nimi+' with different base units')
           
       return pohja 
 
@@ -91,7 +91,7 @@ class JaaKaappi:
       # määrien  vertailu TODO
       if (jaakaapissa == False):
         #ainesosa puuttuu
-        puuttuu.append( (aines[0],aines[1],aines[2])) #tuple of <object aines>, 20, dl
+        puuttuu.append( (aines[0],aines[1],aines[2], "")) #tuple of <object aines>, 20, dl
         #print("puuttuu", aines[0], "(kokonaan)")
       else:
         #print( aines, jaakaapissa)
@@ -99,10 +99,11 @@ class JaaKaappi:
         try:
           erotus,pohjaYksikko = functionsMod.erotus( aines, jaakaapissa)
           if (erotus > 0):
-            puuttuu.append( (aines[0], erotus, pohjaYksikko))
+            puuttuu.append( (aines[0], erotus, pohjaYksikko, ""))
             #print("puuttuu",erotus,pohjaYksikko)
         except ainesMod.AinesParseError as e:
-          print('Error in :'+e.message)
+          puuttuu.append( (aines[0], aines[1], aines[2], '(jääkaapissa on '+jaakaapissa.maara+' '+jaakaapissa.yksikko+', yksiköitä "'+aines[2]+'" ja "'+jaakaapissa.yksikko+'" ei voitu verrata)'))
+          #print('Error in :'+e.message)
           
 
       #print(self.onkoTuotetta(aines.nimi))

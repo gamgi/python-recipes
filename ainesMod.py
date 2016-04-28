@@ -4,8 +4,10 @@
 import time
 
 class AinesParseError(Exception):
-    def __init__(self, message):
-        super(AinesParseError, self).__init__(message)
+  def __init__(self, message):
+    self.message = message
+    #def __init__(self, message):
+        #super(AinesParseError, self).__init__(message)
 
 class ruokaAines:
   def __init__( self, nimi):
