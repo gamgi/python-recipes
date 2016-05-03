@@ -82,7 +82,10 @@ class JaaKaappi:
 
     return False
 
+    #TODO miettiä miten rekursiivinen haku (alireseptit toetutetaan) & testata nykysitä järjestelmää ja tehä unittesteja esim mitapuuttuu (ja ali-)funtio(i)lle
+
   def mitaPuuttuu( self, resepti):
+    """Kertoo puuttuuko reseptin valmistamiseen vaadittavista aineista jotain"""
     puuttuu = []
     ainekset = list(resepti.ainekset)
     #print("reseptissä",ainekset,"puuttuu")
@@ -99,7 +102,7 @@ class JaaKaappi:
         try:
           erotus,pohjaYksikko = functionsMod.erotus( aines, jaakaapissa)
           if (erotus > 0):
-            puuttuu.append( (aines[0], erotus, pohjaYksikko, ""))
+            puuttuu.append( (aines[0], erotus, pohjaYksikko, "(kaapissa oleva määrä "+jaakaapissa.maara+" "+aines[2]+" riittää pieneen erään)"))
             #print("puuttuu",erotus,pohjaYksikko)
         except ainesMod.AinesParseError as e:
           puuttuu.append( (aines[0], aines[1], aines[2], '(jääkaapissa on '+jaakaapissa.maara+' '+jaakaapissa.yksikko+', yksiköitä "'+aines[2]+'" ja "'+jaakaapissa.yksikko+'" ei voitu verrata)'))

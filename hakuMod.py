@@ -6,7 +6,8 @@ import reseptiMod
 #ä
 
 
-def haeValmistettavat( kirja, jaakaappi):
+def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, laiska = False):
+  """ Hakee valmistettavat ruoat (tai josta puuttuu 'puuttuvia' kpl ainesosia). Laiskassa tilassa ohjelma myös antaa pienet määrälliset puutteet anteeksi"""
   valmistettavat = []
   for aines in jaakaappi.ruokaAineet:
     #print("Searching by",aines.nimi)
@@ -24,7 +25,7 @@ def haeValmistettavat( kirja, jaakaappi):
     if (len(puuttuu) > 4): #puuttuu liikaa aineksia
       continue
     vertailulista.append((resepti_nimi, len(puuttuu), puuttuu)) #TODO tulevaisuuden paranteluun: ei puuttuvien aineiden määrä ole paras tapa verrata?
-  # Sort vertailulista
+  # Sort vertailulista puttuvien ainesosien määrän mukaan
   return sorted(vertailulista, key=lambda x: x[1])
   
 
