@@ -94,7 +94,7 @@ class JaaKaappi:
       # määrien  vertailu TODO
       if (jaakaapissa == False):
         #ainesosa puuttuu
-        puuttuu.append( (aines[0],aines[1],aines[2], "")) #tuple of <object aines>, 20, dl
+        puuttuu.append( (aines[0],aines[1],aines[2], "", True)) #tuple of <object aines>, 20, dl, True/False "missing completely" 
         #print("puuttuu", aines[0], "(kokonaan)")
       else:
         #print( aines, jaakaapissa)
@@ -102,10 +102,10 @@ class JaaKaappi:
         try:
           erotus,pohjaYksikko = functionsMod.erotus( aines, jaakaapissa)
           if (erotus > 0):
-            puuttuu.append( (aines[0], erotus, pohjaYksikko, "(kaapissa oleva määrä "+jaakaapissa.maara+" "+aines[2]+" riittää pieneen erään)"))
+            puuttuu.append( (aines[0], erotus, pohjaYksikko, "(kaapissa oleva määrä "+jaakaapissa.maara+" "+aines[2]+" riittää pieneen erään)",False))
             #print("puuttuu",erotus,pohjaYksikko)
         except ainesMod.AinesParseError as e:
-          puuttuu.append( (aines[0], aines[1], aines[2], '(jääkaapissa on '+jaakaapissa.maara+' '+jaakaapissa.yksikko+', yksiköitä "'+aines[2]+'" ja "'+jaakaapissa.yksikko+'" ei voitu verrata)'))
+          puuttuu.append( (aines[0], aines[1], aines[2], '(jääkaapissa on '+jaakaapissa.maara+' '+jaakaapissa.yksikko+', yksiköitä "'+aines[2]+'" ja "'+jaakaapissa.yksikko+'" ei voitu verrata)',False))
           #print('Error in :'+e.message)
           
 

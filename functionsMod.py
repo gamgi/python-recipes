@@ -22,6 +22,11 @@ def letterPairs( word):
     pairs.append(word[c:c+2])
   return pairs
 
+class NotFoundError(Exception):
+  def __init__(self, message = ''):
+    self.message = message
+    #def __init__(self, message):
+        #super(AinesParseError, self).__init__(message)
 
 def erotus( reseptiAine, kaappiAine):
   """ Laskee riittääkö kaapissa oleva aine reseptin tarpeisiin """

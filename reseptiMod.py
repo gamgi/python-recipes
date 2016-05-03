@@ -72,11 +72,14 @@ class ReseptiKirja:
       print( resepti)
     return self.reseptit # returns nr of recipes
 
-  def haeNimi( self, nimi):
+  def haeNimi( self, nimi, samanlaisuus = 1):
     nimi = nimi.strip().lower()
     for resepti in self.reseptit:
-      if (resepti.nimi == nimi):
+      #if (resepti.nimi == nimi):
+      if (functionsMod.wordSimilarity(resepti.nimi, nimi) >= samanlaisuus):
         return resepti
+    raise functionsMod.NotFoundError()
+
 
 
   def haeAinesosalla( self, haettu_aines):
