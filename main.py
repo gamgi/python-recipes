@@ -1,15 +1,15 @@
-import haku
-import ainekset
-import jaakaappi
-import reseptit
+import hakuMod
+import ainesMod
+import jaakaappiMod
+import reseptiMod
 
 def paaohjelma( ):
   # LATAA
   try:
-    kirja = reseptit.ReseptiKirja()
+    kirja = reseptiMod.ReseptiKirja()
     kirja.lataaKansio("./reseptit/")
 
-    kaappi = jaakaappi.JaaKaappi()
+    kaappi = jaakaappiMod.JaaKaappi()
     try:
       buf = open( "./jaakaappi.txt")
       kaappi.lataaJaakaappi( buf)
@@ -35,13 +35,20 @@ def paaohjelma( ):
         print("Haetaanko jääkaapin sisällön perusteella?")
         vastaus = str(input(">:(K/E)")).upper()
         if (vastaus == 'K'):
-          valmistettavat = haku.haeValmistettavat( kirja, kaappi)
+          print("Kuinka monta puuttuvaa ainesta saa olla?")
+          vastaus = str(input(">:(numero)")).upper()
+          try:
+            puuttuvia = int(vastaus)
+          except ValueError:
+            print("Numero ei kelpaa, oletetaan 0")
+            puuttuvia = 0
+          valmistettavat = hakuMod.haeValmistettavat( kirja, kaappi, puuttuvia)
           if (len(valmistettavat) == 0):
             print("Et voi valmistaa mitään jääkaapin sisällöllä")
           else:
             print("Valmistettavat ruoat:")
             for resepti in valmistettavat:
-              print("\t",resepti.nimi)
+              print("\t",resepti[0],"(Puuttuu",resepti[1],"ainesosaa)")
 
 
 

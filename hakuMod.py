@@ -26,32 +26,37 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0):#, laiska = False):
   for resepti_nimi in valmistettavat:
     #print(resepti_nimi,"*")
     puuttuu = jaakaappi.mitaPuuttuu( kirja.haeNimi(resepti_nimi))
+    alireseptit = []
     #tarkista voidaanko puuttuva aines korvata alireseptillä
     for puuttuva in puuttuu:
       # hae tämän nimistä reseptiä
       try:
-        resepti = kirja.haeNimi(puuttuva[0].nimi, 0.7)
+        aliresepti = kirja.haeNimi(puuttuva[0].nimi, 0.7)
       except functionsMod.NotFoundError:
         #print("errnofo",puuttuva[0].nimi)
         continue
         # Interesting bug, if you do Break behavior is udnefined in order
       else:
-        print(puuttuva[0].nimi,"puuttuu löytyi korvaava",resepti.nimi)
+        #print(puuttuva[0].nimi,"puuttuu löytyi korvaava",aliresepti.nimi)
+        alireseptit.append(aliresepti.nimi)
         # remove from valmistettavat
-        valmistettavat.remove(resepti.nimi)
+        valmistettavat.remove(aliresepti.nimi)
         # remove this puuttuva as missing
         puuttuu.remove(puuttuva)
         #print(valmistettavat)
-        alipuuttuu = jaakaappi.mitaPuuttuu( resepti)
+        alipuuttuu = jaakaappi.mitaPuuttuu( aliresepti)
+        #for a in alipuuttuu:
+        #  a[0].reseptista = aliresepti.nimi
         # add missing ingredients of subrecipe to current "puuttuu" list
         puuttuu.extend(alipuuttuu)
+        #TODO should include note that theuy belong to subrecipe
     #kun alireseptit on käsitelty, jatketaan vaatimusten tarkastelua
     if (len(puuttuu) > puuttuvia): #puuttuu liikaa aineksia
       continue
     #if (laiska == False and puuttuu[3] == False):
     #  #Suorittaa tiukan haun, eli "osittain" puuttuvat ainekset eiväty ole OK (puttuu[3] = "missing completely")
     #  continue
-    vertailulista.append((resepti_nimi, len(puuttuu), puuttuu)) #TODO tulevaisuuden paranteluun: ei puuttuvien aineiden määrä ole paras tapa verrata?
+    vertailulista.append((resepti_nimi, len(puuttuu), puuttuu, alireseptit)) #TODO tulevaisuuden paranteluun: ei puuttuvien aineiden määrä ole paras tapa verrata?
   # Sort vertailulista puttuvien ainesosien määrän mukaan
   return sorted(vertailulista, key=lambda x: x[1])
   
@@ -105,7 +110,7 @@ class Test( unittest.TestCase):
     for t in tulos:
       print (t[0], "puuttuu",t[1],"ainesta")
       puuttuvat = []
-      for a in t[2]:
+      for a in t[2]: #käy läpi puuttuvat ainekset
         print("\t",a[0],a[1],a[2],a[3])
         puuttuvat.append(a[0])
       #print("\t",puuttuvat)
@@ -173,6 +178,8 @@ class Test( unittest.TestCase):
     # TULOSTA
     for t in tulos:
       print (t[0], "puuttuu",t[1],"ainesta")
+      if( len(t[3]) != 0):
+        print ("\t","Ainekset, jotka tehdään aliresepteistä:",",".join(t[3]))
       puuttuvat = []
       for a in t[2]:
         print("\t",a[0],a[1],a[2],a[3])
