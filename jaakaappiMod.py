@@ -45,7 +45,6 @@ class JaaKaappi:
       #depending on what we read, do differetn stuff
       if (lukee == 'defs'):
         d = re.split('\s+', rivi.rstrip().lower())
-        print(d,"asda")
         # TODO
       elif (lukee == 'contents'):
         try:
@@ -94,12 +93,15 @@ class JaaKaappi:
 
   def lapaiseeAllergiat( self, resepti, allergiat):
     """tarkistaako läpäiseekö resepti allergiavaatimukset"""
+    if (allergiat == None):
+      return True
     ainekset = list(resepti.ainekset)
     for aines in ainekset: #NB aines is tuple
+      """
       jaakaapissa = self.onkoTuotetta( aines[0])
       if (jaakaapissa != False):
         try:
-          print(jaakaapissa.allergiat)
+          #print(jaakaapissa.allergiat)
           #Magic hack to check if any of allergies match
           if( any((True for x in jaakaapissa.allergiat if x in allergiat)) ):
             return False
@@ -110,6 +112,11 @@ class JaaKaappi:
         #hae tiedot jostain muualta TODO
         return True
         pass
+      """
+      for allergia in self.allergiat:
+        if (functionsMod.wordSimilarity(allergia[0], aines[0].nimi) >= 0.8):
+          #löytyis samankaltainen aine
+          return False
     # Näyttää läpäisevän allergiat
     return True
 
@@ -127,7 +134,15 @@ class JaaKaappi:
       if (rivi[0:1] != '#'): #jos ei kommentti
         tiedot = re.split('\s+', rivi.rstrip().lower())
         if (len(tiedot) == 2):
-          self.allergiat.append((tiedot[0],tiedot[1].upper()))
+          aine = tiedot[0]
+          liput = ",".join(tiedot[1:])
+          try:
+            parsitut = ainesMod.parsiAllergiat(liput)
+          except:
+            raise
+          else:
+          #self.allergiat.append((tiedot[0],tiedot[1].upper()))
+            self.allergiat.append((aine,parsitut))
       rivi = buf.readline()
 
 
@@ -293,7 +308,7 @@ class Test( unittest.TestCase):
     except IOError:
       self.fail("Loading a correctly structured file caused an exception")
     self.input_file.close()
-    vertailulista = [('maito','L'),('snickers','P')]
+    vertailulista = [('maito',['L']),('snickers',['P'])]
     self.assertEqual(vertailulista, kaappi.allergiat, "Loading data failed.")
 
 

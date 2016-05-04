@@ -24,11 +24,10 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
   #mitä aineksia puuttuu näistä valmistetavista
   vertailulista = []
   for resepti_nimi in valmistettavat:
-    #print(resepti_nimi,"*")
     #tarkista allergiatiedot. Jääkaapin kanssa siksi, että allergiatiedot ovat jääkaapissa
-    #if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(resepti_nimi), allergiat) == False):
-      #continue
-      # TODO alters behaviour dramatically
+    if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(resepti_nimi), allergiat) == False):
+      #print(resepti_nimi,"ei läpäissyt allergiakriteerejä")
+      continue
     #  pass
     puuttuu = jaakaappi.mitaPuuttuu( kirja.haeNimi(resepti_nimi))
     alireseptit = []
@@ -53,21 +52,12 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
           puuttuu.remove(puuttuva)
           #print(valmistettavat)
           alipuuttuu = jaakaappi.mitaPuuttuu( aliresepti)
-          
-          #for a in alipuuttuu:
-          #  a[0].reseptista = aliresepti.nimi
           # add missing ingredients of subrecipe to current "puuttuu" list
           puuttuu.extend(alipuuttuu)
-          #TODO should include note that theuy belong to subrecipe
-    #tarkistetaan tapahtuiko y.o. chekeissäjotain
-    #if (not ok):
-      #continue
     #kun alireseptit on käsitelty, jatketaan vaatimusten tarkastelua
     if (len(puuttuu) > puuttuvia): #puuttuu liikaa aineksia
       continue
-    #if (laiska == False and puuttuu[3] == False):
-    #  #Suorittaa tiukan haun, eli "osittain" puuttuvat ainekset eiväty ole OK (puttuu[3] = "missing completely")
-    #  continue
+
     vertailulista.append((resepti_nimi, len(puuttuu), puuttuu, alireseptit)) #TODO tulevaisuuden paranteluun: ei puuttuvien aineiden määrä ole paras tapa verrata?
   # Sort vertailulista puttuvien ainesosien määrän mukaan
   return sorted(vertailulista, key=lambda x: x[1])
@@ -220,6 +210,7 @@ class Test( unittest.TestCase):
     test_data = u"Allergiatiedot\n"\
       + u"# test comment\n"\
       + u"Maito\t\tL\n"\
+      + u"Pähkinä\t\tP\n"\
       + u"Snickers\tP"
     self.input_file = StringIO(test_data)
     try:
@@ -250,24 +241,10 @@ class Test( unittest.TestCase):
     # SUORITA HAKU, ei pähkinää (['P'])
     tulos = haeValmistettavat( kirja, kaappi,4,['P'])
     self.assertEqual( len(tulos), 0)
+    # Normaali haku
+    tulos = haeValmistettavat( kirja, kaappi,4)
+    self.assertEqual( len(tulos), 1)
 
-    # LATAA UUSI JÄÄKAAPPI
-    test_data = u"Jääkaappitiedosto versio 1.0\n"\
-      + u"# Matin jääkaappi\n"\
-      + u"TUOTTEIDEN MÄÄREET\n"\
-      + u"Sipuli\t0.54\tP\n"\
-      + u"JÄÄKAAPIN SISÄLTÖ\n"\
-      + u"Maito\t1\tpurkki\ta\t10dl\tVL\t3.4.2016\n"\
-      + u"Sipuli\t1\tkpl"
-    self.input_file = StringIO(test_data)
-    try:
-      kaappi.lataaJaakaappi(self.input_file)
-    except IOError:
-      self.fail("Loading a correctly structured file caused an exception")
-    self.input_file.close()
-    # SUORITA HAKU, ei pähkinää (['P'])
-    tulos = haeValmistettavat( kirja, kaappi,4,['P'])
-    self.assertEqual( len(tulos), 0)
 
 
 if __name__ == '__main__':
