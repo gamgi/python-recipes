@@ -63,8 +63,9 @@ class JaaKaappi:
     #print(parts)
 
   def onkoTuotetta( self, haettava):
+    """Tarkistaa onko tuotetta jääkapissa, ja palauttaa kokonaismäärän, jos sattusi olemaan useaan kertaan
+    Tämä mahdollista esim jos maitoa on useampi purkki"""
     tulos = []
-    #print(self.ruokaAineet)
     for aines in self.ruokaAineet:
       if (functionsMod.wordSimilarity( aines.nimi, haettava.nimi) > 0.7):
       #if (aines.nimi == haettava.nimi):
@@ -86,10 +87,8 @@ class JaaKaappi:
             raise ainesMod.AinesParseError('The Jaakaappi-tiedosto has multiple instances of '+aine.nimi+' with different base units')
           
       return pohja 
-
     return False
 
-    #TODO miettiä miten rekursiivinen haku (alireseptit toetutetaan) & testata nykysitä järjestelmää ja tehä unittesteja esim mitapuuttuu (ja ali-)funtio(i)lle
 
   def lapaiseeAllergiat( self, resepti, allergiat):
     """tarkistaako läpäiseekö resepti allergiavaatimukset"""

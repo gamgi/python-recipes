@@ -6,13 +6,19 @@ import reseptiMod
 def paaohjelma( ):
   # LATAA
   try:
+    # Reseptit
     kirja = reseptiMod.ReseptiKirja()
     kirja.lataaKansio("./reseptit/")
-
+    # Jääkaappi
     kaappi = jaakaappiMod.JaaKaappi()
     try:
+      # sisältö
       buf = open( "./jaakaappi.txt")
       kaappi.lataaJaakaappi( buf)
+      buf.close()
+      # allergiatiedot
+      buf = open( "./allergiat.txt")
+      kaappi.lataaAllergiat( buf)
       buf.close()
     except IOError as e:
         raise
@@ -49,6 +55,10 @@ def paaohjelma( ):
             print("Valmistettavat ruoat:")
             for resepti in valmistettavat:
               print("\t",resepti[0],"(Puuttuu",resepti[1],"ainesosaa)")
+        else:
+          
+      elif (komento == 'LOPETA'):
+        break
 
 
 
