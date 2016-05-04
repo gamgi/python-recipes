@@ -1,0 +1,5 @@
+Allergiatiedot
+# L = Laktoosi, P = Pähkinä
+Maito     L
+Kerma     L
+Snickers  P
