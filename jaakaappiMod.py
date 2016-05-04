@@ -14,6 +14,7 @@ class JaaKaappi:
   """ Luokka ruoka-aineiden säilytykselle"""
   def __init__( self):
     self.ruokaAineet = []
+    self.allergiat = []
   def listaaKaikki( self):
     print("Jääkaapin sisältö:")
     for aines in self.ruokaAineet:
@@ -33,13 +34,20 @@ class JaaKaappi:
       #print( rivi)
       #interpret headings
       otsikko = rivi.strip().upper()
-      if (otsikko == "JÄÄKAAPIN SISÄLTÖ"):
-        if( lukee != 'header'):
+      if (otsikko == "TUOTTEIDEN MÄÄREET"):
+        lukee = 'defs'
+        rivi = buf.readline()
+      elif (otsikko == "JÄÄKAAPIN SISÄLTÖ"):
+        if( lukee != 'header' and lukee != 'defs'):
           raise BufferError('Order of jääkaappi-file should be header-defs-contents')
         lukee = 'contents'
         rivi = buf.readline()
       #depending on what we read, do differetn stuff
-      if (lukee == 'contents'):
+      if (lukee == 'defs'):
+        d = re.split('\s+', rivi.rstrip().lower())
+        print(d,"asda")
+        # TODO
+      elif (lukee == 'contents'):
         try:
           uusi = self.parseLine(rivi)
           if (uusi):
@@ -84,6 +92,45 @@ class JaaKaappi:
 
     #TODO miettiä miten rekursiivinen haku (alireseptit toetutetaan) & testata nykysitä järjestelmää ja tehä unittesteja esim mitapuuttuu (ja ali-)funtio(i)lle
 
+  def lapaiseeAllergiat( self, resepti, allergiat):
+    """tarkistaako läpäiseekö resepti allergiavaatimukset"""
+    ainekset = list(resepti.ainekset)
+    for aines in ainekset: #NB aines is tuple
+      jaakaapissa = self.onkoTuotetta( aines[0])
+      if (jaakaapissa != False):
+        try:
+          print(jaakaapissa.allergiat)
+          #Magic hack to check if any of allergies match
+          if( any((True for x in jaakaapissa.allergiat if x in allergiat)) ):
+            return False
+
+        except:
+          pass
+      else:
+        #hae tiedot jostain muualta TODO
+        return True
+        pass
+    # Näyttää läpäisevän allergiat
+    return True
+
+
+
+  def lataaAllergiat( self, buf):
+    """Lataa allergiatiedot tiedostosta"""
+    self.allergiat = []
+    rivi = buf.readline()
+    if (rivi.split()[0] != 'Allergiatiedot'):
+      raise BufferError('File format not allergiatiedot-format, Must start with "Allergiatiedot"')
+      return False
+    rivi = buf.readline()
+    while (rivi):
+      if (rivi[0:1] != '#'): #jos ei kommentti
+        tiedot = re.split('\s+', rivi.rstrip().lower())
+        if (len(tiedot) == 2):
+          self.allergiat.append((tiedot[0],tiedot[1].upper()))
+      rivi = buf.readline()
+
+
   def mitaPuuttuu( self, resepti):
     """Kertoo puuttuuko reseptin valmistamiseen vaadittavista aineista jotain"""
     puuttuu = []
@@ -97,7 +144,7 @@ class JaaKaappi:
         puuttuu.append( (aines[0],aines[1],aines[2], "", True)) #tuple of <object aines>, 20, dl, True/False "missing completely" 
         #print("puuttuu", aines[0], "(kokonaan)")
       else:
-        #print( aines, jaakaapissa)
+        #print( aines, jaakaapissa, "On kaappis")
         # Tuotetta on, mutta puuttuuko silti jokin määrä
         try:
           erotus,pohjaYksikko = functionsMod.erotus( aines, jaakaapissa)
@@ -106,7 +153,16 @@ class JaaKaappi:
             #print("puuttuu",erotus,pohjaYksikko)
         except ainesMod.AinesParseError as e:
           puuttuu.append( (aines[0], aines[1], aines[2], '(jääkaapissa on '+jaakaapissa.maara+' '+jaakaapissa.yksikko+', yksiköitä "'+aines[2]+'" ja "'+jaakaapissa.yksikko+'" ei voitu verrata)',False))
+        except BaseException:
+          #muunnos epäonnistui
+          #print('virhe')
+          puuttuu.append( (aines[0], aines[1], aines[2], '(jääkaapissa on '+jaakaapissa.maara+' '+jaakaapissa.yksikko+', yksiköitä "'+aines[2]+'" ja "'+jaakaapissa.yksikko+'" ei voitu verrata)',False))
+
           #print('Error in :'+e.message)
+        #except BaseException as e:
+          #print("oho",aines+":"+jaakaapissa)
+        #  print("oho",e)
+        #  pass
           
 
       #print(self.onkoTuotetta(aines.nimi))
@@ -167,7 +223,7 @@ class Test( unittest.TestCase):
       kaappi.lataaJaakaappi(self.input_file)
     except IOError:
       self.fail("Loading a correctly structured file caused an exception")
-    #self.assertEqual(, kaappi.onkoTuotetta( sipuli), "onkoTuotetta does not function as intended") 
+    #self.assertEqual(0, kaappi.onkoTuotetta( sipuli), "onkoTuotetta does not function as intended") 
     #TODO testit
     # TODO funktion pitää myös palauttaa märä
 
@@ -185,7 +241,7 @@ class Test( unittest.TestCase):
       + u"vlablalsa\n"\
       + u"asdasd"
     self.input_file = StringIO(test_data)
-    kirja = reseptit.ReseptiKirja()
+    kirja = reseptiMod.ReseptiKirja()
     try:
       kirja.lataaResepti(self.input_file)
     except IOError:
@@ -198,7 +254,7 @@ class Test( unittest.TestCase):
       + u"# Matin jääkaappi\n"\
       + u"JÄÄKAAPIN SISÄLTÖ\n"\
       + u"Maito\t1\tpurkki\ta\t10dl\tVL\t3.4.2016\n"\
-      + u"Sitruuna\t1\tkpl"
+      + u"Makarooni\t500\tg"
     self.input_file = StringIO(test_data)
     kaappi = JaaKaappi()
     try:
@@ -207,28 +263,39 @@ class Test( unittest.TestCase):
       self.fail("Loading a correctly structured file caused an exception")
     self.input_file.close()
     # Mitä puuttuu
-    #self.assertEqual(False, kaappi.onkoTuotetta( sipuli), "onkoTuotetta does not function as intended") 
-    print(resepti,"reseptinä")
-    kaappi.mitaPuuttuu( resepti) # TODO
+    #print(resepti,"reseptinä")
+    puuttuu = kaappi.mitaPuuttuu( resepti) # TODO
+    self.assertEqual("Sipulia", puuttuu[0][0].nimi, "identifying missing failed")
+    self.assertEqual(1, len(puuttuu), "identifying missing amount failed")
+    # TODO lisää sipuli ja tarkista uudestaan
   
     #Lisätään sipuli
     sipuli = ainesMod.ruokaAines("sipuli")
-    test_data += u"\nSipuli\t1\tkpl"
+    test_data += u"\nSipuli\t150\tg"
     self.input_file = StringIO(test_data)
     try:
       kaappi.lataaJaakaappi(self.input_file)
     except IOError:
       self.fail("Loading a correctly structured file caused an exception")
-    #self.assertEqual(True, kaappi.onkoTuotetta( sipuli), "onkoTuotetta does not function as intended") 
-    # TODO testit
+    #puuttuuko vielä?
+    puuttuu = kaappi.mitaPuuttuu( resepti) # TODO
+    self.assertEqual(0, len(puuttuu), "identifying missing amount failed")
+
+  def test_lataaAllergiat( self):
+    test_data = u"Allergiatiedot\n"\
+      + u"# test comment\n"\
+      + u"Maito\t\tL\n"\
+      + u"Snickers\tP"
+    self.input_file = StringIO(test_data)
+    kaappi = JaaKaappi()
+    try:
+      kaappi.lataaAllergiat(self.input_file)
+    except IOError:
+      self.fail("Loading a correctly structured file caused an exception")
+    self.input_file.close()
+    vertailulista = [('maito','L'),('snickers','P')]
+    self.assertEqual(vertailulista, kaappi.allergiat, "Loading data failed.")
 
 
-
-  def test_parseAllergy( self):
-    test_data = "VL, G"
-    ainesMod.parsiAllergiat( test_data)
-    #self.assertRaises(AinesParseError, parseAllergy, test_data)
-    test_data = "P, Q"
-    self.assertRaises(ainesMod.AinesParseError, ainesMod.parsiAllergiat, test_data)
 if __name__ == '__main__':
   unittest.main()

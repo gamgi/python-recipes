@@ -79,7 +79,7 @@ class ReseptiKirja:
       if (functionsMod.wordSimilarity(resepti.nimi, nimi) >= samanlaisuus):
         return resepti
     raise functionsMod.NotFoundError()
-
+  
 
 
   def haeAinesosalla( self, haettu_aines):
@@ -114,6 +114,7 @@ class ReseptiKirja:
       except IOError as e:
         if (e.errno != errno.EISDIR): #it is not a directory, it's a real error
           raise
+
 
 
 """ UNIT TESTS """

@@ -54,7 +54,7 @@ def erotus( reseptiAine, kaappiAine):
   except AttributeError:
     #todMaara ei ole määritelty, täytyy tyytyä ensimmäiseen määriteltyyn yksikköön joka voi olal "kpl","purkki" tms.
     pohjaYksikko = kaappiAine.yksikko
-    pohjaMaara = kaappiAine.maara
+    pohjaMaara = int(kaappiAine.maara)
 
   if (reseptiAine[2] == pohjaYksikko):
     erotus = max(0, int(reseptiAine[1]) - pohjaMaara)
@@ -70,7 +70,9 @@ def erotus( reseptiAine, kaappiAine):
         muunnos = muunnosLista[0]
         if (muunnos[3] == reseptiAine[2]): #mikäli löytyy sopiva muunnos, niin muunnetaan
           print("Converting", reseptiAine[2],"to",muunnos[3])
-          
+        
+      #return ('asd','derå')
+      raise BaseException #TODO
     else:
       # Tässä voisi käyttää hyväksi esimääriteltyjä tauluja, mutta tämän tehtävän pointti ei ole tehdä tarkkoja muunnoksia vaan toteuttaa reseptihakua.
       raise ainesMod.AinesParseError('The comparison between '+pohjaYksikko+' and '+reseptiAine[2]+' failed on item "'+reseptiAine[0].nimi+'"')

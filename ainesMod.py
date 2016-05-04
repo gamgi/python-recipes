@@ -2,6 +2,7 @@
 #import dateutil.parser as dateutil
 #from datetime import *
 import time
+import unittest
 
 class AinesParseError(Exception):
   def __init__(self, message):
@@ -69,3 +70,11 @@ class ainesOsa( ruokaAines):
       pass
     return out
 
+""" UNIT TESTS """
+class Test( unittest.TestCase):
+  def test_parseAllergy( self):
+    test_data = "VL, G"
+    parsiAllergiat( test_data)
+    #self.assertRaises(AinesParseError, parseAllergy, test_data)
+    test_data = "P, Q"
+    self.assertRaises(AinesParseError, parsiAllergiat, test_data)

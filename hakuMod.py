@@ -5,9 +5,9 @@ import jaakaappiMod
 import reseptiMod
 import functionsMod
 #ä
+# TODO allergiat
 
-
-def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0):#, laiska = False):
+def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, laiska = False):
   """ Hakee valmistettavat ruoat (tai josta puuttuu 'puuttuvia' kpl ainesosia). Laiskassa tilassa ohjelma myös antaa pienet määrälliset puutteet anteeksi"""
   # NB laiska-ominaisuutta ei toeutettu, koska turhahko
 
@@ -25,31 +25,43 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0):#, laiska = False):
   vertailulista = []
   for resepti_nimi in valmistettavat:
     #print(resepti_nimi,"*")
+    #tarkista allergiatiedot. Jääkaapin kanssa siksi, että allergiatiedot ovat jääkaapissa
+    #if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(resepti_nimi), allergiat) == False):
+      #continue
+      # TODO alters behaviour dramatically
+    #  pass
     puuttuu = jaakaappi.mitaPuuttuu( kirja.haeNimi(resepti_nimi))
     alireseptit = []
     #tarkista voidaanko puuttuva aines korvata alireseptillä
+    ok = True
     for puuttuva in puuttuu:
       # hae tämän nimistä reseptiä
       try:
-        aliresepti = kirja.haeNimi(puuttuva[0].nimi, 0.7)
+        aliresepti = kirja.haeNimi(puuttuva[0].nimi, 0.8)
       except functionsMod.NotFoundError:
         #print("errnofo",puuttuva[0].nimi)
         continue
         # Interesting bug, if you do Break behavior is udnefined in order
       else:
-        #print(puuttuva[0].nimi,"puuttuu löytyi korvaava",aliresepti.nimi)
-        alireseptit.append(aliresepti.nimi)
-        # remove from valmistettavat
-        valmistettavat.remove(aliresepti.nimi)
-        # remove this puuttuva as missing
-        puuttuu.remove(puuttuva)
-        #print(valmistettavat)
-        alipuuttuu = jaakaappi.mitaPuuttuu( aliresepti)
-        #for a in alipuuttuu:
-        #  a[0].reseptista = aliresepti.nimi
-        # add missing ingredients of subrecipe to current "puuttuu" list
-        puuttuu.extend(alipuuttuu)
-        #TODO should include note that theuy belong to subrecipe
+        print(puuttuva[0].nimi,"puuttuu löytyi korvaava",aliresepti.nimi)
+        # TODO tarkista allergiat
+        if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(aliresepti.nimi), allergiat) == True):
+          alireseptit.append(aliresepti.nimi)
+          # remove from valmistettavat
+          valmistettavat.remove(aliresepti.nimi)
+          # remove this puuttuva as missing
+          puuttuu.remove(puuttuva)
+          #print(valmistettavat)
+          alipuuttuu = jaakaappi.mitaPuuttuu( aliresepti)
+          
+          #for a in alipuuttuu:
+          #  a[0].reseptista = aliresepti.nimi
+          # add missing ingredients of subrecipe to current "puuttuu" list
+          puuttuu.extend(alipuuttuu)
+          #TODO should include note that theuy belong to subrecipe
+    #tarkistetaan tapahtuiko y.o. chekeissäjotain
+    #if (not ok):
+      #continue
     #kun alireseptit on käsitelty, jatketaan vaatimusten tarkastelua
     if (len(puuttuu) > puuttuvia): #puuttuu liikaa aineksia
       continue
@@ -186,7 +198,76 @@ class Test( unittest.TestCase):
         puuttuvat.append(a[0])
       #print("\t",puuttuvat)
     # Puuttuu makaronit ja sipuli, eli kaksi asiaa.
-    #self.assertEqual( tulos[0][0:2], ("makaroonilaatikko",2))
+    self.assertEqual( tulos[1][0:2], ("kombopiiras",3))
+
+
+  def test_search_allergy_nofile( self):
+    # LATAA JÄÄKAAPPI
+    test_data = u"Jääkaappitiedosto versio 1.0\n"\
+      + u"# Matin jääkaappi\n"\
+      + u"JÄÄKAAPIN SISÄLTÖ\n"\
+      + u"Maito\t1\tpurkki\ta\t10dl\tVL\t3.4.2016\n"\
+      + u"Pähkinä\t1\tkpl\ta\t1g\tP\n"\
+      + u"Sipuli\t1\tkpl"
+    self.input_file = StringIO(test_data)
+    kaappi = jaakaappiMod.JaaKaappi()
+    try:
+      kaappi.lataaJaakaappi(self.input_file)
+    except IOError:
+      self.fail("Loading a correctly structured file caused an exception")
+    self.input_file.close()
+    # LATAA ALLERGIATIEDOT
+    test_data = u"Allergiatiedot\n"\
+      + u"# test comment\n"\
+      + u"Maito\t\tL\n"\
+      + u"Snickers\tP"
+    self.input_file = StringIO(test_data)
+    try:
+      kaappi.lataaAllergiat(self.input_file)
+    except IOError:
+      self.fail("Loading a correctly structured allergy file caused an exception")
+    self.input_file.close()
+
+    # LATAA RESEPTIT
+    test_data = u"Reseptitiedosto\n"\
+      + u"Pähkinävuoka\n"\
+      + u"1 Vuoka\n"\
+      + u"RAAKA-AINEET\n"\
+      + u"\tPähkinä\t150g\n"\
+      + u"\tJauhoja\t150g\n"\
+      + u"\tSipulia\t3dl\n"\
+      + u"OHJEET\n"\
+      + u"Peanut butterr"\
+      + u"Jelly time\n"
+    self.input_file = StringIO(test_data)
+    kirja = reseptiMod.ReseptiKirja()
+    try:
+      kirja.lataaResepti(self.input_file)
+    except IOError:
+      self.fail("Loading a correctly structured file caused an exception")
+    self.input_file.close()
+
+    # SUORITA HAKU, ei pähkinää (['P'])
+    tulos = haeValmistettavat( kirja, kaappi,4,['P'])
+    self.assertEqual( len(tulos), 0)
+
+    # LATAA UUSI JÄÄKAAPPI
+    test_data = u"Jääkaappitiedosto versio 1.0\n"\
+      + u"# Matin jääkaappi\n"\
+      + u"TUOTTEIDEN MÄÄREET\n"\
+      + u"Sipuli\t0.54\tP\n"\
+      + u"JÄÄKAAPIN SISÄLTÖ\n"\
+      + u"Maito\t1\tpurkki\ta\t10dl\tVL\t3.4.2016\n"\
+      + u"Sipuli\t1\tkpl"
+    self.input_file = StringIO(test_data)
+    try:
+      kaappi.lataaJaakaappi(self.input_file)
+    except IOError:
+      self.fail("Loading a correctly structured file caused an exception")
+    self.input_file.close()
+    # SUORITA HAKU, ei pähkinää (['P'])
+    tulos = haeValmistettavat( kirja, kaappi,4,['P'])
+    self.assertEqual( len(tulos), 0)
 
 
 if __name__ == '__main__':
