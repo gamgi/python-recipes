@@ -161,7 +161,8 @@ def paaohjelma( ):
         vastaus = valikko(
           'Haluatko hakea:\n'\
               +'1) Jääkaapin sisällön perusteella\n'\
-              +'2) nimen perusteella\n', 1,2)
+              +'2) Ainesosan perusteella\n'\
+              +'2) Nimen perusteella\n', 1,3)
         #print("Haetaanko jääkaapin sisällön perusteella?")
         #vastaus = str(input(">:(K/E)")).upper()
 
@@ -192,6 +193,17 @@ def paaohjelma( ):
             for t in tulos:
               print(" "+t[0].nimi)
           
+        elif (vastaus == 3):
+          print("Anna ainesosa")
+          vastaus = str(input(">:"))
+          try:
+            tulos = kirja.haeAinesosalla(vastaus, 0.6)
+          except functionsMod.NotFoundError:
+            print("Ei tuloksia")
+          else:
+            print("Löytyi",len(tulos),"kpl tuloksia:")
+            for t in tulos:
+              print(" "+t[0].nimi)
           
         else:
           pass
