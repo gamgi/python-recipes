@@ -19,7 +19,7 @@ class ruokaAines:
 
 def parsiAllergiat( allergiaData):
   #Vähälaktoosinen, Laktoositon, Gluteeniton, Maidoton, Allergeenit, Kasvis, Pähkinä, Soija, Vegaani
-  flags = ['VL','L','G','M','A','K','P','S','V']
+  flags = ['None','VL','L','G','M','A','K','P','S','V']
   parts = allergiaData.upper().split(',')
   #parts might have whitespace left, so take it out
   parts = list(map( str.strip, parts))
@@ -73,8 +73,9 @@ class ainesOsa( ruokaAines):
 """ UNIT TESTS """
 class Test( unittest.TestCase):
   def test_parseAllergy( self):
-    test_data = "VL, G"
+    test_data = "VL, G, None"
     parsiAllergiat( test_data)
     #self.assertRaises(AinesParseError, parseAllergy, test_data)
+    #vidheellinen lippu
     test_data = "P, Q"
     self.assertRaises(AinesParseError, parsiAllergiat, test_data)

@@ -74,8 +74,10 @@ def erotus( reseptiAine, kaappiAine):
     erotus = max(0, reseptiMaara - pohjaMaara)
     return (erotus, pohjaYksikko)
   else:
+    # TODO tarkista ovatko molemmat esim tilavuuksia, jolloin voidaan toteuttaa ilman tietoja
     # Yksiköt eivät täsmää. On tehtävä muunnos, tai ilmoitetava virheestä
-    # Onko tiheys tiedossa?
+
+    # Seuraava mielenkiintoinen rivi tarkistaa onko tiheys tiedossa ja lisää sen "muunnoslistaan"
     muunnosLista = [määre for määre in esimääreet if wordSimilarity(pohjaNimi, määre[0])>0.7]
     if (len(muunnosLista) != 0):
       try:
