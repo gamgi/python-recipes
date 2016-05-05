@@ -62,7 +62,7 @@ class ReseptiKirja:
 
   def parseLine( self, rivi):
     # parses lines like: "Maitoa   1dl" into parts and returns them as tuple
-    parts = re.findall(r"\s?(\w+)\s*([0-9]+)?(\w+)?(?:\n|$)", rivi)[0] #findall returns list of sets, but only one set per line...so slice with [0]. Regexp finds tab delimited gorups and separates the numbers from letters in "9dl"
+    parts = re.findall(r"\s?(\w+)\s*(\d*\.?\d*)?(\w+)?(?:\n|$)", rivi)[0] #findall returns list of sets, but only one set per line...so slice with [0]. Regexp finds tab delimited gorups and separates the numbers from letters in "9dl"
     if (len(parts) == 0):
       raise AinesParseError('Unable to parse line "'+rivi+'"')
     aines = ainesMod.ruokaAines( parts[0])

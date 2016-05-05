@@ -58,7 +58,7 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
     if (len(puuttuu) > puuttuvia): #puuttuu liikaa aineksia
       continue
 
-    vertailulista.append((resepti_nimi, len(puuttuu), puuttuu, alireseptit)) #TODO tulevaisuuden paranteluun: ei puuttuvien aineiden määrä ole paras tapa verrata?
+    vertailulista.append((resepti_nimi, len(puuttuu), puuttuu, alireseptit )) #TODO tulevaisuuden paranteluun: ei puuttuvien aineiden määrä ole paras tapa verrata?
   # Sort vertailulista puttuvien ainesosien määrän mukaan
   return sorted(vertailulista, key=lambda x: x[1])
   

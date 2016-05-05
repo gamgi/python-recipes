@@ -3,12 +3,12 @@ Avokadopasta
 4 Annosta
 RAAKA-AINEET
   Valkosipulinkynsi 1kpl
-  Chiliä            1/2
+  Chiliä            0.5kpl
   Kypsää Avokadoa   2kpl
   Lime              1kpl
-  Oliiviöljyä       1/2dl
-  Basilikaa         kourallinen
-  Lehtipersiljaa     kourallinen
+  Oliiviöljyä       0.5dl
+  Basilikaa         1kourallinen
+  Lehtipersiljaa    1kourallinen
   Pecorino-juustoa  1dl
   Parmesaani        1dl
   Spagettia         400g

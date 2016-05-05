@@ -181,6 +181,8 @@ def paaohjelma( ):
             print("Valmistettavat ruoat:")
             for resepti in valmistettavat:
               print("\t",resepti[0],"(Puuttuu",resepti[1],"ainesosaa)")
+              for p in resepti[2]: #puuttuvat
+                print("\t\t",p[0].nimi,p[1],p[2])
         elif (vastaus == 2):
           print("Anna hakusana")
           vastaus = str(input(">:"))
@@ -212,11 +214,23 @@ def paaohjelma( ):
         vastaus = valikko(
           'Haluatko listata:\n'\
               +'1) Jääkaapin\n'\
-              +'2) Reseptit\n', 1,2)
+              +'2) Reseptit\n'\
+              +'3) Tietyn reseptinsisällön\n', 1,3)
         if (vastaus == 1):
           kaappi.listaaKaikki()
         elif (vastaus == 2):
           kirja.listaaKaikki()
+        elif (vastaus == 3):
+          print("Anna reseptin nimi")
+          vastaus = str(input(">:"))
+          try:
+            tulos = kirja.haeNimi(vastaus, 0.6)
+          except functionsMod.NotFoundError:
+            print("Ei tuloksia")
+          else:
+            print(tulos.nimi)
+            for aines in tulos.ainekset:
+              print("\t",aines[0].nimi+"\t"+aines[1]+" "+aines[2])
           
 
 
