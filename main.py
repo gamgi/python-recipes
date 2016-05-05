@@ -4,6 +4,21 @@ import functionsMod
 import jaakaappiMod
 import reseptiMod
 import re #regular expressions
+
+def valikko( viesti, eka, vika):
+  while True:
+    print(viesti)
+    try:
+      vastaus = int(input(">:(numero)"))
+    except ValueError:
+      print("Numero ei kelpaa")
+    else:
+      if (vastaus<eka or vastaus>vika):
+        print("valitse y.o. vaihtoehdoista")
+      else:
+        #all OK
+        return vastaus
+
 class Asetukset:
   def __init__( self, tiedostopolku):
     #määrittelyjä
@@ -142,12 +157,15 @@ def paaohjelma( ):
                 print('Allergia-asetuksesi tallennetaan tiedostoon "asetukset.txt", voit muokata niitä myöhemmin')
                 with open("asetukset.txt", "a") as tiedosto:
                   tiedosto.write("allergiat "+",".join(parsitut)+"\n")
+        # Valikko
+        vastaus = valikko(
+          'Haluatko hakea:\n'\
+              +'1) Jääkaapin sisällön perusteella\n'\
+              +'2) nimen perusteella\n', 1,2)
+        #print("Haetaanko jääkaapin sisällön perusteella?")
+        #vastaus = str(input(">:(K/E)")).upper()
 
-
-        print("Haetaanko jääkaapin sisällön perusteella?")
-        vastaus = str(input(">:(K/E)")).upper()
-
-        if (vastaus == 'K'):
+        if (vastaus == 1):
           print("Kuinka monta puuttuvaa ainesta saa olla?")
           vastaus = str(input(">:(numero)")).upper()
           try:
@@ -162,11 +180,37 @@ def paaohjelma( ):
             print("Valmistettavat ruoat:")
             for resepti in valmistettavat:
               print("\t",resepti[0],"(Puuttuu",resepti[1],"ainesosaa)")
+        elif (vastaus == 2):
+          print("Anna hakusana")
+          vastaus = str(input(">:"))
+          try:
+            tulos = kirja.haeNimella(vastaus, 0.6)
+          except functionsMod.NotFoundError:
+            print("Ei tuloksia")
+          else:
+            print("Löytyi",len(tulos),"kpl tuloksia:")
+            for t in tulos:
+              print(" "+t[0].nimi)
+          
+          
         else:
           pass
            
+      elif (komento == 'LISTAA'):
+        vastaus = valikko(
+          'Haluatko listata:\n'\
+              +'1) Jääkaapin\n'\
+              +'2) Reseptit\n', 1,2)
+        if (vastaus == 1):
+          kaappi.listaaKaikki()
+        elif (vastaus == 2):
+          kirja.listaaKaikki()
+          
+
+
+              
       elif (komento == 'ASETUKSET'):
-        print('Asetukset ladataan ohjelman käynnistyessä "asetusket.txt"-tiedostosta')
+        print('Asetukset ladataan ohjelman käynnistyessä "asetukset.txt"-tiedostosta')
         print('Nykyiset asetukset')
         print(' allergiat\t\t',", ".join(asetukset.allergiat))
         print(' allergiatiedosto\t',asetukset.allergiatiedosto)

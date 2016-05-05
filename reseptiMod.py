@@ -80,6 +80,17 @@ class ReseptiKirja:
         return resepti
     raise functionsMod.NotFoundError()
   
+  def haeNimella( self, nimi, samanlaisuus = 1):
+    """hakee nimellä ja sorttaa taulukon similarityn mukaan"""
+    nimi = nimi.strip().lower()
+    tulos = []
+    for resepti in self.reseptit:
+      similarity = functionsMod.wordSimilarity(resepti.nimi, nimi)
+      if (similarity >= samanlaisuus):
+        tulos.append( (resepti,similarity ))
+    if (len(tulos) == 0):
+      raise functionsMod.NotFoundError()
+    return sorted(tulos, key=lambda x: x[1])
 
 
   def haeAinesosalla( self, haettu_aines):
