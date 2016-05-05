@@ -1,0 +1,10 @@
+Reseptitiedosto versio 1.0
+Pasta Bolognese
+1 Annos
+RAAKA-AINEET
+  porkkanaa         100g
+  tomaattipyree     70g
+  jauhelihaa        400g
+  spagettia         200g
+OHJEET
+Mene täffälle. Heitä ainekset pois.
