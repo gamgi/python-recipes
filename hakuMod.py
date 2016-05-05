@@ -10,6 +10,7 @@ import functionsMod
 def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, laiska = False):
   """ Hakee valmistettavat ruoat (tai josta puuttuu 'puuttuvia' kpl ainesosia). Laiskassa tilassa ohjelma myös antaa pienet määrälliset puutteet anteeksi"""
   # NB laiska-ominaisuutta ei toeutettu, koska turhahko
+  # NB ei ota mukaan sellaisia jossa kaikki puuttuu
 
   # hakee ensin jääkaapin sisällön perusteella sopivat reseptit
   valmistettavat = []
@@ -20,7 +21,6 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
       if (t.nimi not in valmistettavat):
         valmistettavat.append(t.nimi)
   #valmistettavat = list(valmistettavat)
-  #print(valmistettavat)
   #mitä aineksia puuttuu näistä valmistetavista
   vertailulista = []
   for resepti_nimi in valmistettavat:
@@ -29,7 +29,7 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
       #print(resepti_nimi,"ei läpäissyt allergiakriteerejä")
       continue
     #  pass
-    puuttuu = jaakaappi.mitaPuuttuu( kirja.haeNimi(resepti_nimi))
+    puuttuu,eipuutu = jaakaappi.mitaPuuttuu( kirja.haeNimi(resepti_nimi))
     alireseptit = []
     #tarkista voidaanko puuttuva aines korvata alireseptillä
     ok = True
@@ -42,7 +42,7 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
         continue
         # Interesting bug, if you do Break behavior is udnefined in order
       else:
-        print(puuttuva[0].nimi,"puuttuu löytyi korvaava",aliresepti.nimi)
+        #print(puuttuva[0].nimi,"puuttuu löytyi korvaava",aliresepti.nimi)
         # TODO tarkista allergiat
         if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(aliresepti.nimi), allergiat) == True):
           alireseptit.append(aliresepti.nimi)
@@ -58,10 +58,38 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
     if (len(puuttuu) > puuttuvia): #puuttuu liikaa aineksia
       continue
 
-    vertailulista.append((resepti_nimi, len(puuttuu), puuttuu, alireseptit )) #TODO tulevaisuuden paranteluun: ei puuttuvien aineiden määrä ole paras tapa verrata?
+    vertailulista.append((resepti_nimi, len(puuttuu), puuttuu, alireseptit ,eipuutu)) #TODO tulevaisuuden paranteluun: ei puuttuvien aineiden määrä ole paras tapa verrata?
   # Sort vertailulista puttuvien ainesosien määrän mukaan
   return sorted(vertailulista, key=lambda x: x[1])
   
+def haeReseptiPuuttuvat( kirja, jaakaappi, resepti_nimi ):
+  """ Hakee reseptistä puuttuvat ainesosat (ja myös mitä on) """
+  # hakee ensin jääkaapin sisällön perusteella sopivat reseptit
+  puuttuu,eipuutu = jaakaappi.mitaPuuttuu( kirja.haeNimi(resepti_nimi))
+  alireseptit = []
+  #tarkista voidaanko puuttuva aines korvata alireseptillä
+  for puuttuva in puuttuu:
+    # hae tämän nimistä reseptiä
+    try:
+      aliresepti = kirja.haeNimi(puuttuva[0].nimi, 0.8)
+    except functionsMod.NotFoundError:
+      continue
+    else:
+      #print(puuttuva[0].nimi,"puuttuu löytyi korvaava",aliresepti.nimi)
+      # TODO tarkista allergiat
+      if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(aliresepti.nimi), allergiat) == True):
+        alireseptit.append(aliresepti.nimi)
+        # remove from valmistettavat
+        valmistettavat.remove(aliresepti.nimi)
+        # remove this puuttuva as missing
+        puuttuu.remove(puuttuva)
+        #print(valmistettavat)
+        alipuuttuu = jaakaappi.mitaPuuttuu( aliresepti)
+        # add missing ingredients of subrecipe to current "puuttuu" list
+        puuttuu.extend(alipuuttuu)
+  #kun alireseptit on käsitelty, jatketaan vaatimusten tarkastelua
+
+  return (resepti_nimi, len(puuttuu), puuttuu, alireseptit ,eipuutu)
 
 
 """ UNIT TESTS """

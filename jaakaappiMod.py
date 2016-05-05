@@ -150,11 +150,11 @@ class JaaKaappi:
   def mitaPuuttuu( self, resepti):
     """Kertoo puuttuuko reseptin valmistamiseen vaadittavista aineista jotain"""
     puuttuu = []
+    eipuutu = []
     ainekset = list(resepti.ainekset)
     #print("reseptissä",ainekset,"puuttuu")
     for aines in ainekset: #NB aines is tuple
       jaakaapissa = self.onkoTuotetta( aines[0])
-      # määrien  vertailu TODO
       if (jaakaapissa == False):
         #ainesosa puuttuu
         puuttuu.append( (aines[0],aines[1],aines[2], "", True)) #tuple of <object aines>, 20, dl, True/False "missing completely" 
@@ -167,6 +167,9 @@ class JaaKaappi:
           if (erotus > 0):
             puuttuu.append( (aines[0], erotus, pohjaYksikko, "(kaapissa oleva määrä "+jaakaapissa.maara+" "+aines[2]+" riittää pieneen erään)",False))
             #print("puuttuu",erotus,pohjaYksikko)
+          else:
+            #ainetta on tarpeeksi
+            eipuutu.append( (jaakaapissa, aines[1],aines[2]))
         except ainesMod.AinesParseError as e:
           puuttuu.append( (aines[0], aines[1], aines[2], '(jääkaapissa on '+jaakaapissa.maara+' '+jaakaapissa.yksikko+', yksiköitä "'+aines[2]+'" ja "'+jaakaapissa.yksikko+'" ei voitu verrata)',False))
         except BaseException:
@@ -184,7 +187,7 @@ class JaaKaappi:
       #print(self.onkoTuotetta(aines.nimi))
       #todo käyttää onkoTuotetta ja palauttaa määrät
     
-    return puuttuu
+    return (puuttuu, eipuutu)
 
 
 """ UNIT TESTS """

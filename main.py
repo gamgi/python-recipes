@@ -176,13 +176,23 @@ def paaohjelma( ):
             puuttuvia = 0
           valmistettavat = hakuMod.haeValmistettavat( kirja, kaappi, puuttuvia)
           if (len(valmistettavat) == 0):
-            print("Et voi valmistaa mitään jääkaapin sisällöllä")
+            print("Et voi valmistaa mitään jääkaapin sisällöllä (ei löytynyt yhtään reseptiä jonka aineista on väh. yksi aines)")
           else:
-            print("Valmistettavat ruoat:")
+            print("Löytyi",len(valmistettavat),"kpl tuloksia:")
             for resepti in valmistettavat:
               print("\t",resepti[0],"(Puuttuu",resepti[1],"ainesosaa)")
+              #print(resepti[2])
+              print("\t\tPuuttuvat:")
               for p in resepti[2]: #puuttuvat
-                print("\t\t",p[0].nimi,p[1],p[2])
+                print("\t\t  {0:23} {1} {2} {3}".format(p[0].nimi, p[1], p[2], p[3]))
+                #print("\t\t",p[0].nimi,"\t\t\t"+p[1],p[2],p[3])
+              print("\t\tEi puutu:")
+              #print(resepti[4])
+              for p in resepti[4]: #puuttuvat
+                try:
+                  print("\t\t  {0:23} {1} {2} ( Kaapissa {3} )".format(p[0].nimi, p[1], p[2], p[0].todMaara))
+                except:
+                  print("\t\t  {0:23} {1} {2} ( Kaapissa {3} {4})".format(p[0].nimi, p[1], p[2], p[0].maara, p[0].yksikko))
         elif (vastaus == 2):
           print("Anna hakusana")
           vastaus = str(input(">:"))
@@ -199,7 +209,7 @@ def paaohjelma( ):
           print("Anna ainesosa")
           vastaus = str(input(">:"))
           try:
-            tulos = kirja.haeAinesosalla(vastaus, 0.6)
+            tulos = kirja.haeNimella(vastaus, 0.6)
           except functionsMod.NotFoundError:
             print("Ei tuloksia")
           else:
@@ -223,6 +233,30 @@ def paaohjelma( ):
         elif (vastaus == 3):
           print("Anna reseptin nimi")
           vastaus = str(input(">:"))
+          #autocorrect :D
+          try:
+            nimi = kirja.haeNimi(vastaus, 0.6).nimi
+          except functionsMod.NotFoundError:
+            nimi = vastaus
+          # itse haku 
+          try:
+            tulos = hakuMod.haeReseptiPuuttuvat( kirja, kaappi, nimi)
+          except functionsMod.NotFoundError:
+            print("Ei tuloksia")
+          else:
+            print("\t",nimi)
+            print("\t\tPuuttuvat:")
+            for p in tulos[2]: #puuttuvat
+              print("\t\t  {0:23} {1} {2} {3}".format(p[0].nimi, p[1], p[2], p[3]))
+            print("\t\tEi puutu:")
+            for p in tulos[4]: #puuttuvat
+              try:
+                print("\t\t  {0:23} {1} {2} ( Kaapissa {3} )".format(p[0].nimi, p[1], p[2], p[0].todMaara))
+              except:
+                print("\t\t  {0:23} {1} {2} ( Kaapissa {3} {4})".format(p[0].nimi, p[1], p[2], p[0].maara, p[0].yksikko))
+            #for aines in tulos.ainekset:
+            #  print("\t",aines[0].nimi+"\t"+aines[1]+" "+aines[2])
+          """
           try:
             tulos = kirja.haeNimi(vastaus, 0.6)
           except functionsMod.NotFoundError:
@@ -231,6 +265,7 @@ def paaohjelma( ):
             print(tulos.nimi)
             for aines in tulos.ainekset:
               print("\t",aines[0].nimi+"\t"+aines[1]+" "+aines[2])
+          """
           
 
 
