@@ -73,7 +73,10 @@ class JaaKaappi:
       #if (aines.nimi == haettava.nimi):
         #huomaa että voi olla useampi sama tuote jääkaapissa
         tulos.append(aines)
+        #break
+
     if (len(tulos) == 1):
+      #print(tulos[0])
       return tulos[0]
     # Summaa jos usea tulos
     if (len(tulos) > 1):
@@ -165,7 +168,7 @@ class JaaKaappi:
         try:
           erotus,pohjaYksikko = functionsMod.erotus( aines, jaakaapissa)
           if (erotus > 0):
-            puuttuu.append( (aines[0], erotus, pohjaYksikko, "(kaapissa oleva määrä "+jaakaapissa.maara+" "+aines[2]+" riittää pieneen erään)",False))
+            puuttuu.append( (aines[0], erotus, pohjaYksikko, "(kaapissa oleva määrä "+jaakaapissa.maara+" "+jaakaapissa.yksikko+" voi riittää pieneen erään)",False))
             #print("puuttuu",erotus,pohjaYksikko)
           else:
             #ainetta on tarpeeksi
