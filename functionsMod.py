@@ -27,6 +27,11 @@ class NotFoundError(Exception):
     self.message = message
     #def __init__(self, message):
         #super(AinesParseError, self).__init__(message)
+class LoadingError(Exception):
+  def __init__(self, message = ''):
+    self.message = message
+    #def __init__(self, message):
+        #super(AinesParseError, self).__init__(message)
 
 def erotus( reseptiAine, kaappiAine):
   """ Laskee riittääkö kaapissa oleva aine reseptin tarpeisiin """
