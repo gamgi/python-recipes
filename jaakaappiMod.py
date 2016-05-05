@@ -51,9 +51,11 @@ class JaaKaappi:
           uusi = self.parseLine(rivi)
           if (uusi):
             self.ruokaAineet.append( uusi)
-        except AinesParseError as e:
+        except ainesMod.AinesParseError as e:
           print('Error parsing :'+e.message)
       rivi = buf.readline()
+      #if not rivi:
+      #  break
   def parseLine( self, rivi):
     #one rivi can conatin many items (10 prk maioa ex)
     #parts = rivi.strip().split("\t")

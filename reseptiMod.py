@@ -25,7 +25,7 @@ class ReseptiKirja:
     self.reseptit = []
   def lataaResepti( self, buf):
     lukee = 'header'
-    ainesLista = set()
+    ainesLista = []#set()
     rivi = buf.readline()
     if (rivi.split()[0] != 'Reseptitiedosto'):
       raise BufferError('File format not resepti-format, Must start with "Reseptitiedosto"')
@@ -51,7 +51,8 @@ class ReseptiKirja:
         try:
           aines = self.parseLine(rivi)
           if (len(aines) != 0):
-            ainesLista.add( aines)
+            #ainesLista.add( aines)
+            ainesLista.append( aines)
         except AinesParseError as e:
           print('Error parsing :'+e.message)
       rivi = buf.readline()
@@ -138,6 +139,7 @@ class Test( unittest.TestCase):
   def test_loading_nofile( self):
     test_data = u"Reseptitiedosto\n"\
       + u"Makaroonilaatikko\n"\
+      + u"1 Vuoka\n"\
       + u"RAAKA-AINEET\n"\
       + u"\tSipulia\t150g\n"\
       + u"\tMakaronia\t150g\n"\
