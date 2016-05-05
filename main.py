@@ -266,6 +266,45 @@ def paaohjelma( ):
             for aines in tulos.ainekset:
               print("\t",aines[0].nimi+"\t"+aines[1]+" "+aines[2])
           """
+      elif (komento == 'OHJE'):
+        print("""Reseptiohjelma v.10 2016
+              Ohjelma lataa reseptit ja jääkaapin ja kertoo mitä voidaan valmistaa.
+
+              Asetukset tiedostossa asetukset.txt 
+              """)
+        print("""
+            HAE
+              Ohjelma siiryy hakutilaan.
+              Mikäli et ole määrittänyt allergioita, tulee ohjelma kysymään allergiatietosi. Ne tallennetaan asetustiedostoon.
+
+              Käyttäjä voi hakea:
+              (1)Jääkaapin sisällön perusteella
+              (2)Ainesosan perusteella
+              (3)Nimen perusteella
+
+              Hauissa otetaan allergiatiedot huomioon.
+
+              (1) Kohdassa listataan myös mitä reseptin aineista puuttuu ja kuinka paljon.
+
+            OHJE
+              Tulostaa ohjeen
+
+            LISTAA
+              Ohjelma siiryy listaustilaan.
+
+              Käyttäjälle voi listata:
+              (1)jääkaapin sisällön
+              (2)ladatut resptit
+              (3)Tietyn reseptin sisällön
+
+              (3) Kohdassa listataan myös mitä reseptin aineista puuttuu ja kuinka paljon.
+
+            ASETUKSET
+              Ohjelma tulostaa ladatut asetukset
+
+          LOPETA
+              Ohjelman suoritus loppuu.
+              Ohjelmasta voi myös poistua ctrl+d yhdistelmällä""")
           
 
 
