@@ -174,7 +174,7 @@ def paaohjelma( ):
           except ValueError:
             print("Numero ei kelpaa, oletetaan 0")
             puuttuvia = 0
-          valmistettavat = hakuMod.haeValmistettavat( kirja, kaappi, puuttuvia)
+          valmistettavat = hakuMod.haeValmistettavat( kirja, kaappi, puuttuvia, kaappi.allergiat)
           if (len(valmistettavat) == 0):
             print("Et voi valmistaa mitään jääkaapin sisällöllä (ei löytynyt yhtään reseptiä jonka aineista on väh. yksi aines)")
           else:

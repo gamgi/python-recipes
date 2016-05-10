@@ -11,7 +11,6 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
   """ Hakee valmistettavat ruoat (tai josta puuttuu 'puuttuvia' kpl ainesosia). Laiskassa tilassa ohjelma myös antaa pienet määrälliset puutteet anteeksi"""
   # NB laiska-ominaisuutta ei toeutettu, koska turhahko
   # NB ei ota mukaan sellaisia jossa kaikki puuttuu
-
   # hakee ensin jääkaapin sisällön perusteella sopivat reseptit
   valmistettavat = []
   for aines in jaakaappi.ruokaAineet:
@@ -80,7 +79,7 @@ def haeReseptiPuuttuvat( kirja, jaakaappi, resepti_nimi ):
     else:
       #print(puuttuva[0].nimi,"puuttuu löytyi korvaava",aliresepti.nimi)
       # TODO tarkista allergiat
-      if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(aliresepti.nimi), allergiat) == True):
+      if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(aliresepti.nimi), jaakappi.allergiat) == True):
         alireseptit.append(aliresepti.nimi)
         # remove from valmistettavat
         valmistettavat.remove(aliresepti.nimi)
