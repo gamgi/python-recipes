@@ -2,4 +2,4 @@ Asetustiedosto
 allergiatiedosto  allergiat.txt
 jaakaappitiedosto jaakaappi.txt
 reseptikansio     ./reseptit/
-allergiat P,G
+allergiat P,L
