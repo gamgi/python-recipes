@@ -11,21 +11,19 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
   """ Hakee valmistettavat ruoat (tai josta puuttuu 'puuttuvia' kpl ainesosia). Laiskassa tilassa ohjelma myös antaa pienet määrälliset puutteet anteeksi"""
   # NB laiska-ominaisuutta ei toeutettu, koska turhahko
   # NB ei ota mukaan sellaisia jossa kaikki puuttuu
+
   # hakee ensin jääkaapin sisällön perusteella sopivat reseptit
   valmistettavat = []
   for aines in jaakaappi.ruokaAineet:
-    #print("Searching by",aines.nimi)
     tulos = kirja.haeAinesosalla( aines.nimi)
     for t in tulos:
       if (t.nimi not in valmistettavat):
         valmistettavat.append(t.nimi)
-  #valmistettavat = list(valmistettavat)
   #mitä aineksia puuttuu näistä valmistetavista
   vertailulista = []
   for resepti_nimi in valmistettavat:
     #tarkista allergiatiedot. Jääkaapin kanssa siksi, että allergiatiedot ovat jääkaapissa
     if (jaakaappi.lapaiseeAllergiat( kirja.haeNimi(resepti_nimi), allergiat) == False):
-      #print(resepti_nimi,"ei läpäissyt allergiakriteerejä")
       continue
     #  pass
     puuttuu,eipuutu = jaakaappi.mitaPuuttuu( kirja.haeNimi(resepti_nimi))
@@ -35,11 +33,8 @@ def haeValmistettavat( kirja, jaakaappi, puuttuvia = 0, allergiat = None):#, lai
     for puuttuva in puuttuu:
       # hae tämän nimistä reseptiä
       try:
-        #print("--puuttuva:",puuttuva, "\n\n\apuuttuva[0]:",puuttuva[0])
-        #print("\tpuuttuu:",puuttuu)
         aliresepti = kirja.haeNimi(puuttuva[0].nimi, 0.8)
       except functionsMod.NotFoundError:
-        #print("errnofo",puuttuva[0].nimi)
         continue
         # Interesting bug, if you do Break behavior is udnefined in order
       else:

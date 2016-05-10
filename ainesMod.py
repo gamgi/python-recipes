@@ -50,7 +50,6 @@ class ainesOsa( ruokaAines):
         self.allergiat = parsiAllergiat(parts[5])
       # Date (parasta ennen)
       if (parts[6]):
-        #print(dateutil.parse(parts[5]))
         try:
           self.aika = time.strptime(parts[6], "%d.%m.%y")
         except ValueError:
