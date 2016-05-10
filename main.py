@@ -123,13 +123,13 @@ def paaohjelma( ):
     return
 
   # TULOSTA
-  print ("X==================X")
+  """print ("X==================X")
   print ("|   RESEPTIKIRJA   | HAE")
   print ("|       0.7        | OHJEET")
   print ("|                  | LISTAA")
   print ("|                  | ASETUKSET")
   print ("|                  | LOPETA")
-  print ("X==================X")
+  print ("X==================X")"""
   komento = ''
   try:
     while komento != 'lopeta':
@@ -318,6 +318,14 @@ def paaohjelma( ):
         print(' reseptikansio\t\t',asetukset.reseptikansio)
       elif (komento == 'LOPETA'):
         break
+      else:
+        print ("X==================X")
+        print ("|   RESEPTIKIRJA   | HAE")
+        print ("|       0.7        | OHJEET")
+        print ("|                  | LISTAA")
+        print ("|                  | ASETUKSET")
+        print ("|                  | LOPETA")
+        print ("X==================X")
 
 
 
