@@ -330,9 +330,9 @@ Ohjelmaan tähän versioon ei ole ehditty toteuttaa allergiatietojen lataamista 
 Jääkaappitiedosto versio 4.5
 # Matin jääkaappi
 JÄÄKAAPIN SISÄLTÖ
-Maito               1        purkki     à        10dl       VL    3.4.2016
-Sipuli              1        kpl
-Makaroneja        1    pussi        à    1kg
+Maito               1    purkki     à    10dl       VL    3.4.2016
+Sipuli              1    kpl
+Makaroneja          1    pussi      à    1kg
 ~~~~
 
 ## Allergiatiedosto
