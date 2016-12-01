@@ -28,18 +28,18 @@ Aja ohjelma komennolla `python3.4 main.py`
 Ohjelma tervehtii käyttäjää valikolla (HAE, OHJE LISTAA, ASETUKSET, LOPETA).
 
 ### HAE
-Ohjelma siiryy hakutilaan.
-Mikäli et ole määrittänyt allergioita, tulee ohjelma kysymään allergiatietosi. Ne tallennetaan asetustiedostoon.
+    Ohjelma siiryy hakutilaan.
+    Mikäli et ole määrittänyt allergioita, tulee ohjelma kysymään allergiatietosi. Ne tallennetaan asetustiedostoon.
 
-Käyttäjä voi hakea:  
-Jääkaapin sisällön perusteella  
-Ainesosan perusteella  
-Nimen perusteella  
+    Käyttäjä voi hakea:  
+    * Jääkaapin sisällön perusteella  
+    * Ainesosan perusteella  
+    * Nimen perusteella  
 
-Hauissa otetaan allergiatiedot huomioon.
+    Hauissa otetaan allergiatiedot huomioon.
 
 
-(1) Kohdassa listataan myös mitä reseptin aineista puuttuu ja kuinka paljon.
+    (1) Kohdassa listataan myös mitä reseptin aineista puuttuu ja kuinka paljon.
 
 ### OHJE
     Tulostaa ohjeen
@@ -49,13 +49,13 @@ Hauissa otetaan allergiatiedot huomioon.
     Ohjelma siiryy listaustilaan.
 
 
-Käyttäjälle voi listata:  
-jääkaapin sisällön  
-ladatut resptit  
-Tietyn reseptin sisällön  
+    Käyttäjälle voi listata:  
+    * jääkaapin sisällön  
+    * ladatut resptit  
+    * Tietyn reseptin sisällön  
 
 
-(3) Kohdassa listataan myös mitä reseptin aineista puuttuu ja kuinka paljon.
+    (3) Kohdassa listataan myös mitä reseptin aineista puuttuu ja kuinka paljon.
 
 
 ### ASETUKSET
@@ -71,7 +71,8 @@ Tietyn reseptin sisällön
     Ohjelma kertoo haettaessa jääkaapin sisällöllä, tai yksittäistä reseptiä haettaessa, mitä jääkaapista uupuu.
 
 Tarkastellaan esimerkkiä, jossa haetaan jääkaapin sisällön pohjalta:  
-`Jääkaappitiedosto versio 1.0
+~~~~
+Jääkaappitiedosto versio 1.0
 #Matin jääkaappi       
 JÄÄKAAPIN SISÄLTÖ
   Maito     1 purkki  a 10dl 
@@ -80,11 +81,11 @@ JÄÄKAAPIN SISÄLTÖ
   Sipuli    1 kpl    
   Avokado    200 g 
   Jauheliha    1 paketti a 350g 
-`
+~~~~
 
 Haku y.o. Jääkaapin pohjalta voisi olla seuraava.
-
-`Löytyi 4 kpl tuloksia:
+~~~~
+Löytyi 4 kpl tuloksia:
  makaroonilaatikko (Puuttuu 5 ainesosaa)
             Puuttuvat:
                   Makaronia               150 g
@@ -104,7 +105,7 @@ Haku y.o. Jääkaapin pohjalta voisi olla seuraava.
                   Hiivaa                   teelusikallinen
                   Sitruuna                1 kpl (kaapissa oleva määrä 1 kpl voi riittää pieneen erään)
             Ei puutu:
-`
+~~~~
 
 Yllä olevassa esimerkissä näemme, että makaroonilaatikon tekemisestä puuttuu 150g makaroonia ja 2kpl kananmunia.
 Jäkaapissa on jo valmiiksi sipulia (1kpl) ja jauhelihaa 350g (reseptiin tarvitaan 200g). Lisäksi meillä on maitoa 10dl joka riittää hyvin.
@@ -250,7 +251,7 @@ Pythonissa  listat ovat mutable ja monikot (tuple) ovat  immutable. Käytössä 
 
 Alla kaksi kiinnostavaa esimerkkiä:
 Lihavoituna luokan instanssit.
-`
+~~~~
 **Jääkaappi**
 class ruokaAines
     self.nimi
@@ -260,14 +261,14 @@ class ainesOsa (ruokaAines)
 class Jaakaappi
     self.ruokaAineet [ **ainesOsa**, **ainesOsa** ]
     Self.allergiat [ ‘G’, ‘P’ ]
-`
+~~~~
 
 Y.o. pseudokoodi kuvaa sitä, minkälaisessa tietorakenteessa jääkaappin ruoka-aineet säilytetään. Jääkaapin ruokaAineet  on lista, joka koostuu luokan ainesOsa instansseista.
 
 Instanssit omaavat mm. Attribuutit nimi, maara, yksikko ja todMaara. TodMaara määrittelee “todellisen määrän” (1 purkki ei ole todellinen määrä, mutta 30g on ).
 
 Allergiat tallennetaan tällä hetkellä vain lippuina. Tulevaisuudessa allergiat voitaisiin muuttaa monikoksi (tuple), jolloin myös ruokaAines voisi olla allergian kohde.
-`
+~~~~
 **Reseptikirja**
 class ruokaAines
     self.nimi
@@ -278,7 +279,7 @@ class resepti
 
 class ReseptiKirja
     self.reseptit [ **resepti**, **resepti**]
-
+~~~~
 
 Tämä pseudokoodi taas kuvaa kuinka respetikirjan ja reseptien tietorakennetta. Huomaa, että ohjelmassa käytetään useaan otteeseen samoja tietorakenteita. Näin ollen olemassa olevien luokkien on oltava ainakin aika hyvin jäsennelty.
 
@@ -302,12 +303,13 @@ Tiedosto alkaa otsikkorivillä, jonka tulee alkaa sanoilla “Asetustiedosto”.
 allergiat asetus kertoo käyttäjän omat “default” liput joilla haetaan. Rivin voi jättää pois tai asettaa arvoksi None, mikäli käyttäjä ei ole allerginen millekään. Ks. mahdolliset liput alla kohdassa “allergiatiedosto”.
 
 ### Esimerkki asetustiedostosta:
-`Asetustiedosto
+~~~~
+Asetustiedosto
 Allergiatiedosto     allergiat.txt
 Jaakaappitiedosto     jaakaappi.txt
 reseptikansio          ./reseptit/
 allergiat               P,L
-`
+~~~~
 
 ## Jääkaappitiedosto
 Vaikka nimen mukaan puhutaan jääkaapista, ei ohjelma erottele kuivia, märkiä tai  kylmiä aineita säilytyspaikan perusteella. Jääkaappi on analogia kaapille, ja se tulee mieltää enemmän “varastona”.
@@ -324,13 +326,14 @@ Ohjelmaan tähän versioon ei ole ehditty toteuttaa allergiatietojen lataamista 
 
 
 ### Esimerki jääkaappitiedostosta:
-`Jääkaappitiedosto versio 4.5
+~~~~
+Jääkaappitiedosto versio 4.5
 # Matin jääkaappi
 JÄÄKAAPIN SISÄLTÖ
 Maito               1        purkki     à        10dl       VL    3.4.2016
 Sipuli              1        kpl
 Makaroneja        1    pussi        à    1kg
-`
+~~~~
 
 ## Allergiatiedosto
 Allergiatiedostoon tallennetaan tunnettujen ruoka-aineiden allergiatiedot. Alkuperäisessä suunnitelmassa allergiatiedot piti laittaa jääkaappitiedoston määre-osaan, mutta tämä jääköön tulevaan versioon.
@@ -347,14 +350,15 @@ Allergialiput ovat kirjaimia, jotka kuvaavat aineen allergiatietoja:
 (Ohjelmassa määritellyt allergialiput)
 
 Lippujen käyttö selviää alla olevasta esmierkkitiedostosta:
-`Allergiatiedot
+~~~~
+Allergiatiedot
 # L = laktoosi, P = Pähkinä, G = Gluteeni
 Maito               L
 Kerma               L
 Pähkinä             P
 Snickers            P
 Makaronit           G
-`
+~~~~
 
 # Reseptit
 Reseptit ladataan asetustiedoston määrittelemästä kansiosta. Kaikki .txt tiedostot luetaan.
@@ -370,7 +374,8 @@ Nimi jälkeen seuraa annosrivi, joka kertoo kuinka ison määrän ruokaa resepti
 Huomaa että erottelumerkkinä tiedostossa käytetään whitespacea (suosituksena sarkain <tab>). Ainoastaan kolme ensimmäistä parametria ovat pakollisia. Huomaa myös että määrä tulee kirjoittaa yhteen ilman välilyöntiä yksikön ja määrän välillä. Aineslistauksen jälkeen seuraa otsikko “OHJEET”, jonka alle voidaan sisällyttää ruoan teko-ohje.
 
 ## Esimerrki reseptitiedostosta:
-`Reseptitiedosto versio 1.0
+~~~~
+Reseptitiedosto versio 1.0
 Makaroonilaatikko
 1 Vuoka
 RAAKA-AINEET
@@ -384,7 +389,7 @@ Suolaa
 Pippuria
 OHJEET
 Keitä makaronit ja paista jauheliha. Sekoita kanamunat maitoon. Sekoita kaikki vuokaan ja ripottele juustoa päälle. Paista 15min.
-`
+~~~~
 
 # Testaus
 Ohjelmassa on toteutettu Yksikkötestit pythonin unittest-moduulin avulla. Testit ovat kunkin moduulitiedoston lopussa (esim functionsMod.py) ja ne ajetaan jos tiedosto ajetaan yksin.
